@@ -93,10 +93,12 @@ function App() {
 
   return (
     <div className="App">
-      <div className="absolute bg-red-300 z-50 h-screen w-12 opacity-30">
+      <div className="absolute bg-red-300 z-50 h-screen w-12 opacity-100">
+        { /* LEFT */ }
       </div>
 
-      <div className="absolute bg-red-300 z-50 w-screen h-12 opacity-30" onClick={topOnClick}>
+      <div className="absolute bg-red-300 z-50 w-screen h-12 opacity-100" onClick={topOnClick}>
+        { /* TOP */ }
       </div>
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center">
