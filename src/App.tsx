@@ -56,6 +56,7 @@ function App() {
         return
       }
       setSearchResult(result)
+      setShowPanel(false)
     })
   }, [searchExpression])
 
