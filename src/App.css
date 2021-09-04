@@ -8,11 +8,11 @@ body {
   overflow: hidden;
 }
 
-#root, .App, .noir-image-container {
-  background: #004040;
-  width: 100%;
-  height: 100%;
-}
+/* #root, .App, .noir-image-container { */
+/*   background: #004040;               */
+/*   width: 100%;                       */
+/*   height: 100%;                      */
+/* }                                    */
 
 #noir-image {
   object-fit: contain;
