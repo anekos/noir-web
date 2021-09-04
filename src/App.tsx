@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 
@@ -92,6 +91,17 @@ function App() {
     setShowPanel((it: boolean) => !it)
   }
 
+  function fullscreenOnClick() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+    setShowPanel(false)
+  }
+
   return (
     <div className="App">
       <div className="absolute bg-red-300 z-50 h-screen w-12 opacity-0">
@@ -105,34 +115,42 @@ function App() {
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center">
 
         <div className="w-screen h-screen absolute z-10">
-          { selectedImage ? <img
-                             src={imageUrl(selectedImage)}
-                             id="noir-image"
-                             alt={selectedImage.format}
-                             onLoad={imageOnLoad}
-                             onError={imageOnError}
-                             className="z-0"
-                           />
-                          : <img src={logo} className="App-logo" alt="logo" />
+          { selectedImage && <img
+                              src={imageUrl(selectedImage)}
+                              id="noir-image"
+                              alt={selectedImage.format}
+                              onLoad={imageOnLoad}
+                              onError={imageOnError}
+                              className="z-0"
+                              onClick={topOnClick} />
           }
         </div>
 
         { showPanel &&
-            <div className="z-40 bg-blue-500 p-8 absolute opacity-80 rounded-md flex items-center">
-              <input
-                type="text"
-                id="search-expression"
-                className="rounded-sm block m-2 font-bold"
-                onChange={expressionOnChange}
-                value={expressionBuffer} />
-              <input
-                type="button"
-                id="search-button"
-                className="rounded-sm p-2 bg-green-500 text-white font-bold"
-                onClick={_ => setSearchExpression(expressionBuffer)}
-                value="Search" />
-
-          </div>
+            <div className="z-40 bg-blue-500 p-8 absolute opacity-90 rounded-md flex flex-col items-center">
+              <div className="rounded-md flex flex-row items-center">
+                <input
+                  type="text"
+                  id="search-expression"
+                  className="rounded-sm block m-2 font-bold flex-1"
+                  onChange={expressionOnChange}
+                  value={expressionBuffer} />
+                <input
+                  type="button"
+                  id="search-button"
+                  className="rounded-sm p-2 bg-green-500 text-white font-bold m-2"
+                  onClick={_ => setSearchExpression(expressionBuffer)}
+                  value="Search" />
+              </div>
+              <div className="rounded-md flex flex-row items-center">
+                <input
+                  type="button"
+                  id="search-button"
+                  className="rounded-sm p-2 bg-green-500 text-white font-bold m-2"
+                  onClick={fullscreenOnClick}
+                  value="Fullscreen" />
+              </div>
+            </div>
         }
 
       </div>
