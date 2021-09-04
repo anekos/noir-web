@@ -1,0 +1,55 @@
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+#root, .App, .noir-image-container {
+  background: #004040;
+  width: 100%;
+  height: 100%;
+}
+
+#noir-image {
+  object-fit: contain;
+  object-position: 50% 50%;
+  width: 100%;
+  height: 100%;
+}
+
+.menu-switch {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 10px;
+  font-size: 10em;
+  color: white;
+  background-color: blue;
+  z-index: 1000;
+  opacity: 0;
+}
+
+.menu-panel {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 50%;
+  font-size: 10em;
+  color: white;
+  background-color: blue;
+}
+
+#search-expression {
+  font-size: 30px;
+  width: 80%;
+}
+
+.hidden {
+  display: none;
+}
