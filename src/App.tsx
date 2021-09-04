@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import './App.css';
 
+import { InputNumber } from "@supabase/ui";
+
 
 const ApiEndPoint = 'http://localhost:9696'
 
@@ -46,6 +48,13 @@ function App() {
   const [loadingTries, setLoadingTryles] = useState<number>(0)
   const [expressionBuffer, setExpressionBuffer] = useState(DefaultExpression)
   const [showPanel, setShowPanel] = useState<boolean>(false)
+  const [updateInterval, setUpdateInterval] = useState<number>(3)
+
+  const next = (result) => {
+    if (!result || result.items.length <= 0)
+      return
+    setSelectedImage(selectImageRandomly(result))
+  }
 
   useEffect(() => {
     console.log(searchExpression)
@@ -55,19 +64,16 @@ function App() {
         return
       }
       setSearchResult(result)
+      next(result)
       setShowPanel(false)
     })
   }, [searchExpression])
 
   useEffect(() => {
-    if (!searchResult || searchResult.items.length <= 0)
-      return
-
-    const next = () => setSelectedImage(selectImageRandomly(searchResult))
-    next()
-    const handle = setInterval(next, 10000)
-    return () => clearInterval(handle)
-  }, [searchResult])
+    console.log('selectedImte')
+    const handle = setTimeout(() => next(searchResult), 1000 * updateInterval)
+    return () => clearTimeout(handle)
+  }, [selectedImage, searchResult, updateInterval])
 
   function imageOnLoad(_: any) {
     console.log('imageOnLoad')
@@ -100,6 +106,10 @@ function App() {
       }
     }
     setShowPanel(false)
+  }
+
+  function intervalOnChange(e: any) {
+    setUpdateInterval(e.target.value)
   }
 
   return (
@@ -141,6 +151,9 @@ function App() {
                   className="rounded-sm p-2 bg-green-500 text-white font-bold m-2"
                   onClick={_ => setSearchExpression(expressionBuffer)}
                   value="Search" />
+              </div>
+              <div className="rounded-md flex flex-row items-center">
+                <InputNumber placeholder="Interval" onChange={intervalOnChange} value={updateInterval} />
               </div>
               <div className="rounded-md flex flex-row items-center">
                 <input
