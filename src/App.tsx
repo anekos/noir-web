@@ -51,14 +51,17 @@ function App() {
   const [updateInterval, setUpdateInterval] = useState<number>(3)
 
   const next = (result) => {
-    if (!result || result.items.length <= 0)
+    if (!result || result.items.length <= 0) {
+      console.log('No image')
       return
+    }
     setSelectedImage(selectImageRandomly(result))
   }
 
   useEffect(() => {
     console.log(searchExpression)
     search(searchExpression).then((result) => {
+      console.log('result.items.length', result.items.length)
       if (result.items.length <= 0) {
         window.alert('Not found')
         return
@@ -70,9 +73,12 @@ function App() {
   }, [searchExpression])
 
   useEffect(() => {
-    console.log('selectedImte')
+    console.log('useEffect [selectedImage, searchResult, updateInterval]')
     const handle = setTimeout(() => next(searchResult), 1000 * updateInterval)
-    return () => clearTimeout(handle)
+    return () => {
+      console.log('clearTimeout')
+      clearTimeout(handle)
+    }
   }, [selectedImage, searchResult, updateInterval])
 
   function imageOnLoad(_: any) {
@@ -85,7 +91,7 @@ function App() {
     if (!searchResult)
       return
     setLoadingTryles(loadingTries + 1)
-    console.log('Loading tries', loadingTries)
+    console.log('imageOnLoad', {tries: loadingTries})
     setSelectedImage(selectImageRandomly(searchResult))
   }
 
