@@ -2,42 +2,16 @@ import React, {useState, useEffect} from 'react';
 import './App.css';
 
 import { InputNumber } from "@supabase/ui";
+import { NoirImage, imageUrl } from './image';
+import { NoirSearchResult } from './search_result';
+import { search } from './api';
 
-
-const ApiEndPoint = ''
-
-
-interface NoirImage {
-  file: {
-    path: string
-  }
-  format: string
-}
-
-interface NoirSearchResult {
-  items: NoirImage[]
-}
-
-function imageUrl(image: NoirImage): string {
-  return `${ApiEndPoint}/file?path=${encodeURIComponent(image.file.path)}`
-}
 
 function selectImageRandomly(searchResult: NoirSearchResult): NoirImage | null {
   if (searchResult.items.length <= 0)
     return null
   return searchResult.items[Math.floor(Math.random() * searchResult.items.length)]
 }
-
-async function search(expression: string): Promise<NoirSearchResult> {
-  return fetch(`${ApiEndPoint}/search`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({expression}),
-  }).then(it => it.json());
-}
-
 
 function App() {
   const DefaultExpression = "path like '%wallpaper%'"
