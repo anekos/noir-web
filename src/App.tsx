@@ -4,7 +4,7 @@ import './App.css';
 import { InputNumber } from "@supabase/ui";
 
 
-const ApiEndPoint = 'http://localhost:9696'
+const ApiEndPoint = ''
 
 
 interface NoirImage {
