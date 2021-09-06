@@ -5,6 +5,7 @@ import { InputNumber } from "@supabase/ui";
 import { NoirImage, imageUrl } from './image';
 import { NoirSearchResult } from './search_result';
 import { search } from './api';
+import Storage from './storage';
 
 
 function selectImageRandomly(searchResult: NoirSearchResult): NoirImage | null {
@@ -17,12 +18,12 @@ function App() {
   const DefaultExpression = "path like '%wallpaper%'"
 
   const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
-  const [searchExpression, setSearchExpression] = useState(DefaultExpression)
+  const [searchExpression, setSearchExpression] = useState(Storage.get<string>('search-expression', DefaultExpression))
   const [selectedImage, setSelectedImage] = useState<null|NoirImage>(null)
   const [loadingTries, setLoadingTryles] = useState<number>(0)
   const [expressionBuffer, setExpressionBuffer] = useState(DefaultExpression)
   const [showPanel, setShowPanel] = useState<boolean>(false)
-  const [updateInterval, setUpdateInterval] = useState<number>(3)
+  const [updateInterval, setUpdateInterval] = useState<number>(Storage.get<number>('update-interval', 60))
 
   const next = (result) => {
     if (!result || result.items.length <= 0) {
@@ -34,6 +35,7 @@ function App() {
 
   useEffect(() => {
     console.log(searchExpression)
+    Storage.set('search-express', searchExpression)
     search(searchExpression).then((result) => {
       console.log('result.items.length', result.items.length)
       if (result.items.length <= 0) {
@@ -49,6 +51,7 @@ function App() {
   useEffect(() => {
     console.log('useEffect [selectedImage, searchResult, updateInterval]')
     const handle = setTimeout(() => next(searchResult), 1000 * updateInterval)
+    Storage.set('update-interval', updateInterval)
     return () => {
       console.log('clearTimeout')
       clearTimeout(handle)
