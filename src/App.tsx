@@ -26,7 +26,7 @@ function App() {
   const [showPanel, setShowPanel] = useState<boolean>(false)
   const [updateInterval, setUpdateInterval] = useState<number>(Storage.get<number>('update-interval', 60))
 
-  const next = (result) => {
+  const next = (result: NoirSearchResult | null) => {
     if (!result || result.items.length <= 0) {
       console.log('No image')
       return
