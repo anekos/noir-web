@@ -21,7 +21,7 @@ function App() {
   const [searchExpression, setSearchExpression] = useState(Storage.get<string>('search-expression', DefaultExpression))
   const [selectedImage, setSelectedImage] = useState<null|NoirImage>(null)
   const [loadingTries, setLoadingTryles] = useState<number>(0)
-  const [expressionBuffer, setExpressionBuffer] = useState(DefaultExpression)
+  const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
   const [showPanel, setShowPanel] = useState<boolean>(false)
   const [updateInterval, setUpdateInterval] = useState<number>(Storage.get<number>('update-interval', 60))
 
