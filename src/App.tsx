@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import './App.css'
 
+import strftime from 'strftime'
 import { InputNumber } from "@supabase/ui"
+import { useTimer } from 'use-timer'
 
 import { NoirImage, imageUrl } from './image'
 import { NoirSearchResult } from './search_result'
@@ -25,6 +27,8 @@ function App() {
   const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
   const [showPanel, setShowPanel] = useState<boolean>(false)
   const [updateInterval, setUpdateInterval] = useState<number>(Storage.get<number>('update-interval', 60))
+  const [showClock, setShowClock] = useState<boolean>(Storage.get<boolean>('show-clock', true))
+  useTimer({interval: 1000, autostart: true})
 
   const next = (result: NoirSearchResult | null) => {
     if (!result || result.items.length <= 0) {
@@ -96,6 +100,11 @@ function App() {
     setUpdateInterval(e.target.value)
   }
 
+  function clockOnChange(e) {
+    Storage.set('show-clock', !showClock)
+    setShowClock(it => !it)
+  }
+
   return (
     <div className="App">
       <div className="absolute bg-red-300 z-50 h-screen w-12 opacity-0">
@@ -105,6 +114,11 @@ function App() {
       <div className="absolute bg-red-300 z-50 w-screen h-12 opacity-0" onClick={topOnClick}>
         { /* TOP */ }
       </div>
+
+      { showClock &&
+          <div className="absolute right-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-30 hover:opacity-90 text-bold text-white">
+            { strftime('%Y-%m-%d (%a) %H:%M:%S') }
+          </div> }
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center">
 
@@ -122,28 +136,34 @@ function App() {
 
         { showPanel &&
             <div className="z-40 bg-blue-500 p-8 absolute opacity-90 rounded-md flex flex-col items-center">
-              <div className="rounded-md flex flex-row items-center">
+              <div className="flex flex-row items-center">
                 <input
                   type="text"
                   id="search-expression"
-                  className="rounded-sm block m-2 font-bold flex-1"
+                  className="rounded-md block m-2 font-bold flex-1"
                   onChange={expressionOnChange}
                   value={expressionBuffer} />
                 <input
                   type="button"
                   id="search-button"
-                  className="rounded-sm p-2 bg-green-500 text-white font-bold m-2"
+                  className="rounded-md p-2 bg-green-500 text-white font-bold m-2"
                   onClick={_ => setSearchExpression(expressionBuffer)}
                   value="Search" />
               </div>
-              <div className="rounded-md flex flex-row items-center">
+              <div className="flex flex-row items-center m-2">
                 <InputNumber placeholder="Interval" onChange={intervalOnChange} value={updateInterval} />
               </div>
-              <div className="rounded-md flex flex-row items-center">
+              <div className="flex flex-row items-center">
+                <div className="rounded-md bg-green-500 p-2">
+                  <input type="checkbox" id="clock-checkbox" className="mr-1" checked={showClock} onChange={clockOnChange} />
+                  <label htmlFor="clock-checkbox" className="text-white font-bold ">Clock</label>
+                </div>
+              </div>
+              <div className="flex flex-row items-center">
                 <input
                   type="button"
                   id="search-button"
-                  className="rounded-sm p-2 bg-green-500 text-white font-bold m-2"
+                  className="rounded-md p-2 bg-green-500 text-white font-bold m-2"
                   onClick={fullscreenOnClick}
                   value="Fullscreen" />
               </div>
