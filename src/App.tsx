@@ -176,6 +176,7 @@ function App() {
                     <textarea
                       className="w-full bg-gray-300"
                       rows={12}
+                      wrap="off"
                       value={JSON.stringify(selectedImage, null, '  ')} />
                   </div>
               }
