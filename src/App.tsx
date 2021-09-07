@@ -117,7 +117,7 @@ function App() {
 
       { showClock &&
           <div className="absolute right-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-30 hover:opacity-90 text-bold text-white">
-            { strftime('%Y-%m-%d (%a) %H:%M:%S') }
+            { strftime('%Y-%m-%d (%a) %H:%M') }
           </div> }
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center">
