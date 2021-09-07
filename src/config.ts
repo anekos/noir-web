@@ -1,1 +1,1 @@
-export const ApiEndPoint = ''
+export const ApiEndPoint = process.env.API_END_POINT;
