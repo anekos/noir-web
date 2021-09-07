@@ -135,40 +135,53 @@ function App() {
         </div>
 
         { showPanel &&
-            <div className="z-40 bg-blue-500 p-8 absolute opacity-90 rounded-md flex flex-col items-center">
-              <div className="flex flex-row items-center">
-                <input
-                  type="text"
-                  id="search-expression"
-                  className="rounded-md block m-2 font-bold flex-1"
-                  onChange={expressionOnChange}
-                  value={expressionBuffer} />
-                <input
-                  type="button"
-                  id="search-button"
-                  className="rounded-md p-2 bg-green-500 text-white font-bold m-2"
-                  onClick={_ => setSearchExpression(expressionBuffer)}
-                  value="Search" />
-              </div>
-              <div className="flex flex-row items-center m-2">
-                <InputNumber placeholder="Interval" onChange={intervalOnChange} value={updateInterval} />
-              </div>
-              <div className="flex flex-row items-center">
-                <div className="rounded-md bg-green-500 p-2">
-                  <input type="checkbox" id="clock-checkbox" className="mr-1" checked={showClock} onChange={clockOnChange} />
-                  <label htmlFor="clock-checkbox" className="text-white font-bold ">Clock</label>
+            <div className="z-40 p-8 absolute flex flex-col items-center">
+
+              <div className="z-40 bg-blue-500 p-8 opacity-90 rounded-md flex flex-col items-center">
+                <div className="flex flex-row items-center">
+                  <input
+                    type="text"
+                    id="search-expression"
+                    className="rounded-md block m-2 font-bold flex-1"
+                    onChange={expressionOnChange}
+                    value={expressionBuffer} />
+                  <input
+                    type="button"
+                    id="search-button"
+                    className="rounded-md p-2 bg-green-500 text-white font-bold m-2"
+                    onClick={_ => setSearchExpression(expressionBuffer)}
+                    value="Search" />
+                </div>
+                <div className="flex flex-row items-center m-2">
+                  <InputNumber placeholder="Interval" onChange={intervalOnChange} value={updateInterval} />
+                </div>
+                <div className="flex flex-row items-center">
+                  <div className="rounded-md bg-green-500 p-2">
+                    <input type="checkbox" id="clock-checkbox" className="mr-1" checked={showClock} onChange={clockOnChange} />
+                    <label htmlFor="clock-checkbox" className="text-white font-bold ">Clock</label>
+                  </div>
+                </div>
+                <div className="flex flex-row items-center">
+                  <input
+                    type="button"
+                    id="search-button"
+                    className="rounded-md p-2 bg-green-500 text-white font-bold m-2"
+                    onClick={fullscreenOnClick}
+                    value="Fullscreen" />
                 </div>
               </div>
-              <div className="flex flex-row items-center">
-                <input
-                  type="button"
-                  id="search-button"
-                  className="rounded-md p-2 bg-green-500 text-white font-bold m-2"
-                  onClick={fullscreenOnClick}
-                  value="Fullscreen" />
-              </div>
+
+              { selectedImage &&
+                  <div className="z-40 bg-gray-500 p-2 opacity-90 rounded-md flex flex-col items-center w-full mt-2">
+                    <textarea
+                      className="w-full bg-gray-300"
+                      rows={12}
+                      value={JSON.stringify(selectedImage, null, '  ')} />
+                  </div>
+              }
+
             </div>
-        }
+          }
 
       </div>
     </div>
