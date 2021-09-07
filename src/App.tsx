@@ -1,11 +1,12 @@
-import React, {useState, useEffect} from 'react';
-import './App.css';
+import React, {useState, useEffect} from 'react'
+import './App.css'
 
-import { InputNumber } from "@supabase/ui";
-import { NoirImage, imageUrl } from './image';
-import { NoirSearchResult } from './search_result';
-import { search } from './api';
-import Storage from './storage';
+import { InputNumber } from "@supabase/ui"
+
+import { NoirImage, imageUrl } from './image'
+import { NoirSearchResult } from './search_result'
+import { search } from './api'
+import Storage from './storage'
 
 
 function selectImageRandomly(searchResult: NoirSearchResult): NoirImage | null {
