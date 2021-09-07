@@ -35,7 +35,7 @@ function App() {
 
   useEffect(() => {
     console.log(searchExpression)
-    Storage.set('search-express', searchExpression)
+    Storage.set('search-expression', searchExpression)
     search(searchExpression).then((result) => {
       console.log('result.items.length', result.items.length)
       if (result.items.length <= 0) {
