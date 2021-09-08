@@ -50,7 +50,7 @@ function App() {
   const [showClock, setShowClock] = useState<boolean>(Storage.get<boolean>('show-clock', true))
   const timer = useTimer({
     interval: updateInterval * 1000,
-    autostart: true,
+    autostart: false,
     onTimeUpdate: (t: number) => {
       next(searchResult)
     }
@@ -91,8 +91,10 @@ function App() {
 
   function intervalOnChange(e: React.ChangeEvent<HTMLInputElement>) {
     setUpdateInterval(parseInt(e.target.value))
-    timer.reset()
-    timer.start()
+    if (!showPanel) {
+      timer.reset()
+      timer.start()
+    }
   }
 
   function clockOnChange() {
@@ -124,6 +126,9 @@ function App() {
   useEffect(() => next(searchResult), [searchResult])
 
   useEffect(() => Storage.set('update-interval', updateInterval), [updateInterval])
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => showPanel ? timer.pause() : timer.start(), [showPanel])
 
   return (
     <div className="App">
