@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import './App.css'
 
+import classNames from 'classnames'
 import strftime from 'strftime'
 import { InputNumber } from "@supabase/ui"
 import { useTimer } from 'use-timer'
@@ -17,6 +18,25 @@ function selectImageRandomly(searchResult: NoirSearchResult): NoirImage | null {
   return searchResult.items[Math.floor(Math.random() * searchResult.items.length)]
 }
 
+function NoImage() {
+  return (
+    <span className="rounded-md bg-red-800 p-3 text-white font-bold">
+      No Image
+    </span>
+  )
+}
+
+function SideButton({children, extraClass, onClick}) {
+  return (
+    <div
+      className={classNames('absolute bg-green-300 z-50 h-screen w-12 rounded-md my-1 opacity-0 hover:opacity-80', extraClass)}
+      onClick={onClick}
+    >
+      { children }
+    </div>
+  )
+}
+
 function App() {
   const DefaultExpression = "path like '%wallpaper%'"
 
@@ -28,43 +48,16 @@ function App() {
   const [showPanel, setShowPanel] = useState<boolean>(false)
   const [updateInterval, setUpdateInterval] = useState<number>(Storage.get<number>('update-interval', 60))
   const [showClock, setShowClock] = useState<boolean>(Storage.get<boolean>('show-clock', true))
-  useTimer({interval: 1000, autostart: true})
-
-  const next = (result: NoirSearchResult | null) => {
-    if (!result || result.items.length <= 0) {
-      console.log('No image')
-      return
+  const timer = useTimer({
+    interval: updateInterval * 1000,
+    autostart: true,
+    onTimeUpdate: (t: number) => {
+      next(searchResult)
     }
-    setSelectedImage(selectImageRandomly(result))
-  }
-
-  useEffect(() => {
-    console.log(searchExpression)
-    Storage.set('search-expression', searchExpression)
-    search(searchExpression).then((result) => {
-      console.log('result.items.length', result.items.length)
-      if (result.items.length <= 0) {
-        window.alert('Not found')
-        return
-      }
-      setSearchResult(result)
-      next(result)
-      setShowPanel(false)
-    })
-  }, [searchExpression])
-
-  useEffect(() => {
-    console.log('useEffect [selectedImage, searchResult, updateInterval]')
-    const handle = setTimeout(() => next(searchResult), 1000 * updateInterval)
-    Storage.set('update-interval', updateInterval)
-    return () => {
-      console.log('clearTimeout')
-      clearTimeout(handle)
-    }
-  }, [selectedImage, searchResult, updateInterval])
+  })
 
   function imageOnLoad(_: any) {
-    console.log('imageOnLoad')
+    setLoadingTryles(0)
   }
 
   function imageOnError(_: any) {
@@ -72,8 +65,8 @@ function App() {
       return
     if (!searchResult)
       return
+    console.log('retry to load', {tries: loadingTries})
     setLoadingTryles(loadingTries + 1)
-    console.log('imageOnLoad', {tries: loadingTries})
     setSelectedImage(selectImageRandomly(searchResult))
   }
 
@@ -81,61 +74,86 @@ function App() {
     setExpressionBuffer(e.target.value)
   }
 
-  function topOnClick() {
+  function showPanelOnClick(e: React.MouseEvent<HTMLElement>) {
+    e.stopPropagation()
     setShowPanel((it: boolean) => !it)
   }
 
   function fullscreenOnClick() {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
+      document.documentElement.requestFullscreen()
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+      if (document.exitFullscreen)
+        document.exitFullscreen()
     }
     setShowPanel(false)
   }
 
-  function intervalOnChange(e: any) {
-    setUpdateInterval(e.target.value)
+  function intervalOnChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setUpdateInterval(parseInt(e.target.value))
+    timer.reset()
+    timer.start()
   }
 
-  function clockOnChange(e) {
+  function clockOnChange() {
     Storage.set('show-clock', !showClock)
     setShowClock(it => !it)
   }
 
+  function moveOnClick(mod: (number) => void) {
+  }
+
+  function next (result: NoirSearchResult | null) {
+    if (!result || result.items.length <= 0) {
+      setSelectedImage(null)
+      return
+    }
+    setSelectedImage(selectImageRandomly(result))
+  }
+
+  useEffect(() => {
+    Storage.set('search-expression', searchExpression)
+
+    search(searchExpression).then((result) => {
+      setSearchResult(result)
+      setShowPanel(false)
+    })
+  }, [searchExpression])
+
+  useEffect(() => next(searchResult), [searchResult])
+
+  useEffect(() => Storage.set('update-interval', updateInterval), [updateInterval])
+
   return (
     <div className="App">
-      <div className="absolute bg-red-300 z-50 h-screen w-12 opacity-0">
-        { /* LEFT */ }
-      </div>
+      <SideButton extraClass="" onClick={moveOnClick((it: number) => it - 1)}>
+      </SideButton>
 
-      <div className="absolute bg-red-300 z-50 w-screen h-12 opacity-0" onClick={topOnClick}>
-        { /* TOP */ }
-      </div>
+      <SideButton extraClass="inset-y-0 right-0" onClick={moveOnClick((it: number) => it - 1)}>
+      </SideButton>
 
       { showClock &&
           <div className="absolute right-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-30 hover:opacity-90 text-bold text-white">
             { strftime('%Y-%m-%d (%a) %H:%M') }
           </div> }
 
-      <div className="w-screen h-screen bg-green-800 flex items-center justify-center">
+      <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
 
-        <div className="w-screen h-screen absolute z-10">
-          { selectedImage && <img
-                              src={imageUrl(selectedImage)}
-                              id="noir-image"
-                              alt={selectedImage.format}
-                              onLoad={imageOnLoad}
-                              onError={imageOnError}
-                              className="z-0"
-                              onClick={topOnClick} />
-          }
-        </div>
+        { selectedImage
+            ? <div className="w-screen h-screen absolute z-10">
+                <img
+                  src={imageUrl(selectedImage)}
+                  id="noir-image"
+                  alt={selectedImage.format}
+                  onLoad={imageOnLoad}
+                  onError={imageOnError}
+                  className="z-0" />
+              </div>
+            : <NoImage />
+        }
 
         { showPanel &&
-            <div className="z-40 p-8 absolute flex flex-col items-center">
+        <div className="z-40 p-8 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
 
               <div className="z-40 bg-blue-500 p-8 opacity-90 rounded-md flex flex-col items-center">
                 <div className="flex flex-row items-center">
@@ -177,7 +195,7 @@ function App() {
                       className="w-full bg-gray-300"
                       rows={12}
                       wrap="off"
-                      value={JSON.stringify(selectedImage, null, '  ')} />
+                      defaultValue={JSON.stringify(selectedImage, null, '  ')} />
                   </div>
               }
 
