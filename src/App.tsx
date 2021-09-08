@@ -101,6 +101,7 @@ function App() {
   }
 
   function moveOnClick(mod: (number) => void) {
+    next(searchResult)
   }
 
   function next (result: NoirSearchResult | null) {
@@ -126,10 +127,10 @@ function App() {
 
   return (
     <div className="App">
-      <SideButton extraClass="" onClick={moveOnClick((it: number) => it - 1)}>
+      <SideButton extraClass="" onClick={_ => moveOnClick((it: number) => it - 1)}>
       </SideButton>
 
-      <SideButton extraClass="inset-y-0 right-0" onClick={moveOnClick((it: number) => it - 1)}>
+      <SideButton extraClass="inset-y-0 right-0" onClick={_ => moveOnClick((it: number) => it - 1)}>
       </SideButton>
 
       { showClock &&
