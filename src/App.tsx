@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react'
 import './App.css'
 
 import classNames from 'classnames'
+import commonPathPrefix from 'common-path-prefix'
+import escapeStringRegexp from 'escape-string-regexp';
 import strftime from 'strftime'
 import { InputNumber } from "@supabase/ui"
 import { useTimer } from 'use-timer'
@@ -62,6 +64,7 @@ function App() {
   const DefaultExpression = "path like '%wallpaper%'"
 
   const [loadingTries, setLoadingTryles] = useState<number>(0)
+  const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
   const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
   const [selectedImage, setSelectedImage] = useState<null|NoirImage>(null)
@@ -138,7 +141,10 @@ function App() {
 
   useEffect(() => {
     search(searchExpression).then((result) => {
+      const prefix = commonPathPrefix(result.items.map(it => it.file.path))
+      const prefixPattern = new RegExp('^' + escapeStringRegexp(prefix))
       setSearchResult(result)
+      setPathPrefix(prefixPattern)
       setShowPanel(false)
     })
   }, [searchExpression])
@@ -163,7 +169,7 @@ function App() {
 
       { showPath && selectedImage &&
           <div className="absolute left-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-30 hover:opacity-90 text-bold text-white">
-            { selectedImage.file.path }
+            { selectedImage.file.path.replace(pathPrefix, '') }
           </div> }
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
