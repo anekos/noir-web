@@ -37,6 +37,27 @@ function SideButton({children, extraClass, onClick}) {
   )
 }
 
+interface ICheckBox {
+  caption: string
+  value: boolean
+  setter: (x: (y: boolean) => boolean) => void
+}
+function CheckBox({caption, value, setter}: ICheckBox) {
+  function onClickToggle(setter: (x: (y: boolean) => boolean) => void) {
+    return function () {
+      setter(it => !it)
+    }
+  }
+
+  return (
+    <div className="rounded-md bg-green-500 p-2 mr-2">
+      <input type="checkbox" id="clock-checkbox" className="mr-1" checked={value} onChange={onClickToggle(setter)} />
+      <label htmlFor="clock-checkbox" className="text-white font-bold ">{caption}</label>
+    </div>
+
+  )
+}
+
 function App() {
   const DefaultExpression = "path like '%wallpaper%'"
 
@@ -46,6 +67,7 @@ function App() {
   const [selectedImage, setSelectedImage] = useState<null|NoirImage>(null)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
   const [showPanel, setShowPanel] = useState<boolean>(false)
+  const [showPath, setShowPath] = useState<boolean>(false)
   const [updateInterval, setUpdateInterval] = useLocalStorage<number>('update-interval', 60)
 
   const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
@@ -102,10 +124,6 @@ function App() {
     }
   }
 
-  function clockOnChange() {
-    setShowClock(it => !it)
-  }
-
   function moveOnClick(mod: (number) => void) {
     next(searchResult)
   }
@@ -143,6 +161,11 @@ function App() {
             { strftime('%Y-%m-%d (%a) %H:%M') }
           </div> }
 
+      { showPath && selectedImage &&
+          <div className="absolute left-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-30 hover:opacity-90 text-bold text-white">
+            { selectedImage.file.path }
+          </div> }
+
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
 
         { selectedImage
@@ -159,8 +182,7 @@ function App() {
         }
 
         { showPanel &&
-        <div className="z-40 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
-
+            <div className="z-40 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
               <div className="z-40 bg-blue-500 p-8 opacity-90 rounded-md flex flex-col items-center">
                 <div className="flex flex-row items-center">
                   <input
@@ -185,10 +207,8 @@ function App() {
                   />
                 </div>
                 <div className="flex flex-row items-center">
-                  <div className="rounded-md bg-green-500 p-2">
-                    <input type="checkbox" id="clock-checkbox" className="mr-1" checked={showClock} onChange={clockOnChange} />
-                    <label htmlFor="clock-checkbox" className="text-white font-bold ">Clock</label>
-                  </div>
+                  <CheckBox caption="Path" value={showPath} setter={setShowPath} />
+                  <CheckBox caption="Clock" value={showClock} setter={setShowClock} />
                 </div>
                 <div className="flex flex-row items-center">
                   <input
@@ -208,7 +228,6 @@ function App() {
                       defaultValue={JSON.stringify(selectedImage, null, '  ')} />
                   </div>
               }
-
             </div>
           }
 
