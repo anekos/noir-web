@@ -200,7 +200,6 @@ function App() {
                     <textarea
                       className="w-full bg-gray-300"
                       rows={12}
-                      wrap="off"
                       defaultValue={JSON.stringify(selectedImage, null, '  ')} />
                   </div>
               }
