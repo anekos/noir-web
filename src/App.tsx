@@ -163,12 +163,12 @@ function App() {
       </SideButton>
 
       { showClock &&
-          <div className="absolute right-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-30 hover:opacity-90 text-bold text-white">
+          <div className="absolute right-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-50 hover:opacity-90 text-bold text-white">
             { strftime('%Y-%m-%d (%a) %H:%M') }
           </div> }
 
       { showPath && selectedImage &&
-          <div className="absolute left-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-30 hover:opacity-90 text-bold text-white">
+          <div className="absolute left-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-50 hover:opacity-90 text-bold text-white">
             { selectedImage.file.path.replace(pathPrefix, '') }
           </div> }
 
