@@ -49,7 +49,7 @@ function App() {
   const [updateInterval, setUpdateInterval] = useState<number>(Storage.get<number>('update-interval', 60))
   const [showClock, setShowClock] = useState<boolean>(Storage.get<boolean>('show-clock', true))
   const timer = useTimer({
-    interval: updateInterval * 1000,
+    interval: Math.max(updateInterval, 1) * 1000,
     autostart: false,
     onTimeUpdate: (t: number) => {
       next(searchResult)
@@ -90,7 +90,10 @@ function App() {
   }
 
   function intervalOnChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setUpdateInterval(parseInt(e.target.value))
+    const newValue = parseInt(e.target.value)
+    if (isNaN(newValue))
+      return
+    setUpdateInterval(newValue)
     if (!showPanel) {
       timer.reset()
       timer.start()
@@ -177,7 +180,12 @@ function App() {
                     value="Search" />
                 </div>
                 <div className="flex flex-row items-center m-2">
-                  <InputNumber placeholder="Interval" onChange={intervalOnChange} value={updateInterval} />
+                  <InputNumber
+                    placeholder="Interval"
+                    defaultValue={updateInterval}
+                    onBlur={intervalOnChange}
+                    min={1}
+                  />
                 </div>
                 <div className="flex flex-row items-center">
                   <div className="rounded-md bg-green-500 p-2">
