@@ -9,7 +9,7 @@ import { useTimer } from 'use-timer'
 import { NoirImage, imageUrl } from './image'
 import { NoirSearchResult } from './search_result'
 import { search } from './api'
-import Storage from './storage'
+import { useLocalStorage } from './use-local-storage'
 
 
 function selectImageRandomly(searchResult: NoirSearchResult): NoirImage | null {
@@ -40,14 +40,16 @@ function SideButton({children, extraClass, onClick}) {
 function App() {
   const DefaultExpression = "path like '%wallpaper%'"
 
-  const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
-  const [searchExpression, setSearchExpression] = useState(Storage.get<string>('search-expression', DefaultExpression))
-  const [selectedImage, setSelectedImage] = useState<null|NoirImage>(null)
   const [loadingTries, setLoadingTryles] = useState<number>(0)
-  const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
+  const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
+  const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
+  const [selectedImage, setSelectedImage] = useState<null|NoirImage>(null)
+  const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
   const [showPanel, setShowPanel] = useState<boolean>(false)
-  const [updateInterval, setUpdateInterval] = useState<number>(Storage.get<number>('update-interval', 60))
-  const [showClock, setShowClock] = useState<boolean>(Storage.get<boolean>('show-clock', true))
+  const [updateInterval, setUpdateInterval] = useLocalStorage<number>('update-interval', 60)
+
+  const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
+
   const timer = useTimer({
     interval: Math.max(updateInterval, 1) * 1000,
     autostart: false,
@@ -101,7 +103,6 @@ function App() {
   }
 
   function clockOnChange() {
-    Storage.set('show-clock', !showClock)
     setShowClock(it => !it)
   }
 
@@ -118,8 +119,6 @@ function App() {
   }
 
   useEffect(() => {
-    Storage.set('search-expression', searchExpression)
-
     search(searchExpression).then((result) => {
       setSearchResult(result)
       setShowPanel(false)
@@ -127,8 +126,6 @@ function App() {
   }, [searchExpression])
 
   useEffect(() => next(searchResult), [searchResult])
-
-  useEffect(() => Storage.set('update-interval', updateInterval), [updateInterval])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => showPanel ? timer.pause() : timer.start(), [showPanel])
