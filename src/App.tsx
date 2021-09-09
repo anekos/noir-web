@@ -162,7 +162,7 @@ function App() {
         }
 
         { showPanel &&
-        <div className="z-40 p-8 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
+        <div className="z-40 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
 
               <div className="z-40 bg-blue-500 p-8 opacity-90 rounded-md flex flex-col items-center">
                 <div className="flex flex-row items-center">
