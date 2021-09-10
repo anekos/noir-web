@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from 'react'
 import './App.css'
 
-import classNames from 'classnames'
 import commonPathPrefix from 'common-path-prefix'
-import escapeStringRegexp from 'escape-string-regexp';
-import strftime from 'strftime'
+import escapeStringRegexp from 'escape-string-regexp'
 import { InputNumber } from "@supabase/ui"
 import { useTimer } from 'use-timer'
 
+import Clock from './ui/Clock'
+import EdgeButton from './ui/EdgeButton'
 import { NoirImage, imageUrl } from './image'
 import { NoirSearchResult } from './search_result'
 import { search } from './api'
@@ -25,17 +25,6 @@ function NoImage() {
     <span className="rounded-md bg-red-800 p-3 text-white font-bold">
       No Image
     </span>
-  )
-}
-
-function SideButton({children, extraClass, onClick}) {
-  return (
-    <div
-      className={classNames('absolute bg-green-300 z-50 h-screen w-12 rounded-md my-1 opacity-0 hover:opacity-80', extraClass)}
-      onClick={onClick}
-    >
-      { children }
-    </div>
   )
 }
 
@@ -159,16 +148,12 @@ function App() {
 
   return (
     <div className="App">
-      <SideButton extraClass="" onClick={_ => moveOnClick((it: number) => it - 1)}>
-      </SideButton>
+      <EdgeButton extraClass="my-1 h-screen w-12" onClick={_ => moveOnClick((it: number) => it - 1)} />
+      <EdgeButton extraClass="my-1 h-screen w-12 inset-y-0 right-0" onClick={_ => moveOnClick((it: number) => it - 1)}/>
+      <EdgeButton extraClass="mx-1 w-screen h-12" onClick={_ => moveOnClick((it: number) => it - 1)}/>
+      <EdgeButton extraClass="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={_ => moveOnClick((it: number) => it - 1)}/>
 
-      <SideButton extraClass="inset-y-0 right-0" onClick={_ => moveOnClick((it: number) => it - 1)}>
-      </SideButton>
-
-      { showClock &&
-          <div className="absolute right-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-50 hover:opacity-90 text-bold text-white">
-            { strftime('%Y-%m-%d (%a) %H:%M') }
-          </div> }
+      { showClock && <Clock /> }
 
       { showPath && selectedImage &&
           <div className="absolute left-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-50 hover:opacity-90 text-bold text-white">
