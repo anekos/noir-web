@@ -2,6 +2,12 @@ import { ApiEndPoint } from './config'
 import { NoirSearchResult } from './search_result';
 
 
+export async function getAliases(): Promise<string[]> {
+  return fetch(`${ApiEndPoint}/aliases`, {
+    method: 'GET',
+  }).then(it => it.json());
+}
+
 export async function search(expression: string): Promise<NoirSearchResult> {
   return fetch(`${ApiEndPoint}/search`, {
     method: 'POST',

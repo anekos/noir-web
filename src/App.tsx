@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import './App.css'
 
+import 'react-autocomplete-input/dist/bundle.css';
+import TextInput from 'react-autocomplete-input'
 import commonPathPrefix from 'common-path-prefix'
 import escapeStringRegexp from 'escape-string-regexp'
 import { InputNumber } from "@supabase/ui"
@@ -11,7 +13,7 @@ import EdgeButton from './ui/EdgeButton'
 import useImageHistory from './use-image-history'
 import { NoirImage, imageUrl } from './image'
 import { NoirSearchResult } from './search_result'
-import { search } from './api'
+import { getAliases, search } from './api'
 import { useLocalStorage } from './use-local-storage'
 
 
@@ -53,6 +55,7 @@ function CheckBox({caption, value, setter}: ICheckBox) {
 function App() {
   const DefaultExpression = "path like '%wallpaper%'"
 
+  const [aliases, setAliases] = useState<string[]>([])
   const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
   const [loadingTries, setLoadingTryles] = useState<number>(0)
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
@@ -92,8 +95,8 @@ function App() {
       imageHistory.push(image, true)
   }
 
-  function expressionOnChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setExpressionBuffer(e.target.value)
+  function expressionOnChange(value) {
+    setExpressionBuffer(value)
   }
 
   function showPanelOnClick(e: React.MouseEvent<HTMLElement>) {
@@ -173,6 +176,10 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageHistory.inThePast, autoNext, showPanel])
 
+  useEffect(() => {
+    getAliases().then(setAliases)
+  }, [])
+
   console.log('render', selectedImage && selectedImage.file.path)
 
   return (
@@ -204,16 +211,17 @@ function App() {
             : <NoImage />
         }
 
-        { showPanel &&
+        { !showPanel &&
             <div className="z-40 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
-              <div className="z-40 bg-blue-500 p-8 opacity-90 rounded-md flex flex-col items-center">
-                <div className="flex flex-row items-center">
-                  <input
-                    type="text"
-                    id="search-expression"
-                    className="rounded-md block m-2 font-bold flex-1"
+              <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
+                <div className="flex flex-row items-center w-full">
+                  <TextInput
+                    options={aliases}
+                    trigger="@"
+                    changeOnSelect={(trigger, suffix) => suffix}
                     onChange={expressionOnChange}
-                    value={expressionBuffer} />
+                    value={expressionBuffer}
+                    className="rounded-md block m-2 font-bold flex-1 h-8 p-2 w-96 h-20" />
                   <input
                     type="button"
                     id="search-button"
@@ -242,7 +250,7 @@ function App() {
               </div>
 
               { selectedImage &&
-                  <div className="z-40 bg-gray-500 p-2 opacity-90 rounded-md flex flex-col items-center w-full mt-2">
+                  <div className="z-30 bg-gray-500 p-2 opacity-90 rounded-md flex flex-col items-center w-full mt-2">
                     <div className="flex flex-row items-center mb-1">
                       <div>
                         { searchResult &&
