@@ -42,9 +42,9 @@ function CheckBox({caption, value, setter}: ICheckBox) {
   }
 
   return (
-    <div className="rounded-md bg-green-500 p-2 mr-2">
-      <input type="checkbox" id="clock-checkbox" className="mr-1" checked={value} onChange={onClickToggle(setter)} />
-      <label htmlFor="clock-checkbox" className="text-white font-bold ">{caption}</label>
+    <div className="rounded-md bg-green-500 p-2 mr-2" onClick={onClickToggle(setter)}>
+      <input type="checkbox" className="mr-1" checked={value} />
+      <label className="text-white font-bold ">{caption}</label>
     </div>
 
   )
