@@ -116,11 +116,13 @@ function App() {
     }
   }
 
-  function moveOnClick(mod: (number) => void) {
-    timer.reset()
-    if (!showPanel)
-      timer.start()
-    next(searchResult)
+  function moveOnClick(mod: (number) => void): (e: any) => void {
+    return function() {
+      timer.reset()
+      if (!showPanel)
+        timer.start()
+      next(searchResult)
+    }
   }
 
   function next (result: NoirSearchResult | null) {
@@ -148,10 +150,10 @@ function App() {
 
   return (
     <div className="App">
-      <EdgeButton extraClass="my-1 h-screen w-12" onClick={_ => moveOnClick((it: number) => it - 1)} />
-      <EdgeButton extraClass="my-1 h-screen w-12 inset-y-0 right-0" onClick={_ => moveOnClick((it: number) => it - 1)}/>
-      <EdgeButton extraClass="mx-1 w-screen h-12" onClick={_ => moveOnClick((it: number) => it - 1)}/>
-      <EdgeButton extraClass="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={_ => moveOnClick((it: number) => it - 1)}/>
+      <EdgeButton extraClass="my-1 h-screen w-12" onClick={moveOnClick((it: number) => it - 1)} />
+      <EdgeButton extraClass="my-1 h-screen w-12 inset-y-0 right-0" onClick={moveOnClick((it: number) => it - 1)}/>
+      <EdgeButton extraClass="mx-1 w-screen h-12" onClick={moveOnClick((it: number) => it - 1)}/>
+      <EdgeButton extraClass="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={moveOnClick((it: number) => it - 1)}/>
 
       { showClock && <Clock /> }
 
