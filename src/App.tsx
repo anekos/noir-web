@@ -218,14 +218,20 @@ function App() {
                 <div className="flex flex-row items-center">
                   <CheckBox caption="Path" value={showPath} setter={setShowPath} />
                   <CheckBox caption="Clock" value={showClock} setter={setShowClock} />
-                </div>
-                <div className="flex flex-row items-center">
                   <input
                     type="button"
-                    id="search-button"
                     className="rounded-md p-2 bg-green-500 text-white font-bold m-2"
                     onClick={fullscreenOnClick}
                     value="Fullscreen" />
+                </div>
+                <div className="flex flex-row items-center">
+                  <div>
+                    { searchResult &&
+                        <div>
+                          { searchResult.items.length } images
+                        </div>
+                    }
+                  </div>
                 </div>
               </div>
 
