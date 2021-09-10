@@ -53,6 +53,7 @@ function CheckBox({caption, value, setter}: ICheckBox) {
 function App() {
   const DefaultExpression = "path like '%wallpaper%'"
 
+  const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
   const [loadingTries, setLoadingTryles] = useState<number>(0)
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
@@ -123,7 +124,7 @@ function App() {
 
   function nextOnClick() {
     timer.reset()
-    if (!showPanel)
+    if (!showPanel && autoNext)
       timer.start()
     next(searchResult)
   }
@@ -161,18 +162,18 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => next(searchResult), [searchResult])
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => showPanel ? timer.pause() : timer.start(), [showPanel])
-
   useEffect(() => {
-    if (imageHistory.inThePast) {
-      timer.reset()
+    if (showPanel) {
       timer.pause()
+    } else if (imageHistory.inThePast || !autoNext) {
+      timer.reset()
     } else {
       timer.start()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageHistory.inThePast])
+  }, [imageHistory.inThePast, autoNext, showPanel])
+
+  console.log('render', selectedImage && selectedImage.file.path)
 
   return (
     <div className="App">
@@ -221,6 +222,7 @@ function App() {
                     value="Search" />
                 </div>
                 <div className="flex flex-row items-center m-2">
+                  <CheckBox caption="Interval" value={autoNext} setter={setAutoNext} />
                   <InputNumber
                     placeholder="Interval"
                     defaultValue={updateInterval}
