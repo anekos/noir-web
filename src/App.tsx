@@ -70,7 +70,7 @@ function App() {
   const [selectedImage, setSelectedImage] = useState<null|NoirImage>(null)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
   const [showPanel, setShowPanel] = useState<boolean>(false)
-  const [showPath, setShowPath] = useState<boolean>(false)
+  const [showPath, setShowPath] = useLocalStorage<boolean>('show-path', false)
   const [updateInterval, setUpdateInterval] = useLocalStorage<number>('update-interval', 60)
 
   const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
