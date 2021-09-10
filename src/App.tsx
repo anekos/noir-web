@@ -239,19 +239,19 @@ function App() {
                     onClick={fullscreenOnClick}
                     value="Fullscreen" />
                 </div>
-                <div className="flex flex-row items-center">
-                  <div>
-                    { searchResult &&
-                        <div>
-                          { searchResult.items.length } images
-                        </div>
-                    }
-                  </div>
-                </div>
               </div>
 
               { selectedImage &&
                   <div className="z-40 bg-gray-500 p-2 opacity-90 rounded-md flex flex-col items-center w-full mt-2">
+                    <div className="flex flex-row items-center mb-1">
+                      <div>
+                        { searchResult &&
+                            <div className="font-bold text-white">
+                              { searchResult.items.length } images
+                            </div>
+                        }
+                      </div>
+                    </div>
                     <textarea
                       className="w-full bg-gray-300"
                       rows={12}
