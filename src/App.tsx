@@ -8,6 +8,7 @@ import { useTimer } from 'use-timer'
 
 import Clock from './ui/Clock'
 import EdgeButton from './ui/EdgeButton'
+import useImageHistory from './use-image-history'
 import { NoirImage, imageUrl } from './image'
 import { NoirSearchResult } from './search_result'
 import { search } from './api'
@@ -56,11 +57,11 @@ function App() {
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
   const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
-  const [selectedImage, setSelectedImage] = useState<null|NoirImage>(null)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
   const [showPanel, setShowPanel] = useState<boolean>(false)
   const [showPath, setShowPath] = useLocalStorage<boolean>('show-path', false)
   const [updateInterval, setUpdateInterval] = useLocalStorage<number>('update-interval', 60)
+  const imageHistory = useImageHistory()
 
   const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
 
@@ -71,6 +72,8 @@ function App() {
       next(searchResult)
     }
   })
+
+  const selectedImage: NoirImage | null = imageHistory.currentImage
 
   function imageOnLoad(_: any) {
     setLoadingTryles(0)
@@ -83,7 +86,9 @@ function App() {
       return
     console.log('retry to load', {tries: loadingTries})
     setLoadingTryles(loadingTries + 1)
-    setSelectedImage(selectImageRandomly(searchResult))
+    const image = selectImageRandomly(searchResult)
+    if (image !== null)
+      imageHistory.push(image, true)
   }
 
   function expressionOnChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -116,21 +121,31 @@ function App() {
     }
   }
 
-  function moveOnClick(mod: (number) => void): (e: any) => void {
+  function nextOnClick() {
+    timer.reset()
+    if (!showPanel)
+      timer.start()
+    next(searchResult)
+  }
+
+  function moveOnClick(backword: boolean) {
     return function() {
-      timer.reset()
-      if (!showPanel)
-        timer.start()
-      next(searchResult)
+      if (imageHistory.inThePast || backword)
+        imageHistory[backword ? 'backward' : 'forward']()
+      else
+        return nextOnClick()
     }
   }
 
   function next (result: NoirSearchResult | null) {
     if (!result || result.items.length <= 0) {
-      setSelectedImage(null)
+      imageHistory.hide()
       return
     }
-    setSelectedImage(selectImageRandomly(result))
+    const image = selectImageRandomly(result)
+    if (image) {
+      imageHistory.push(image, true)
+    }
   }
 
   useEffect(() => {
@@ -143,17 +158,28 @@ function App() {
     })
   }, [searchExpression])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => next(searchResult), [searchResult])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => showPanel ? timer.pause() : timer.start(), [showPanel])
 
+  useEffect(() => {
+    if (imageHistory.inThePast) {
+      timer.reset()
+      timer.pause()
+    } else {
+      timer.start()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageHistory.inThePast])
+
   return (
     <div className="App">
-      <EdgeButton extraClass="my-1 h-screen w-12" onClick={moveOnClick((it: number) => it - 1)} />
-      <EdgeButton extraClass="my-1 h-screen w-12 inset-y-0 right-0" onClick={moveOnClick((it: number) => it - 1)}/>
-      <EdgeButton extraClass="mx-1 w-screen h-12" onClick={moveOnClick((it: number) => it - 1)}/>
-      <EdgeButton extraClass="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={moveOnClick((it: number) => it - 1)}/>
+      <EdgeButton extraClass="my-1 h-screen w-12" onClick={moveOnClick(true)} />
+      <EdgeButton extraClass="my-1 h-screen w-12 inset-y-0 right-0" onClick={moveOnClick(false)}/>
+      <EdgeButton extraClass="mx-1 w-screen h-12" onClick={nextOnClick}/>
+      <EdgeButton extraClass="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={nextOnClick}/>
 
       { showClock && <Clock /> }
 
