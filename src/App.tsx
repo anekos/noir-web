@@ -128,6 +128,9 @@ function App() {
   }
 
   function moveOnClick(mod: (number) => void) {
+    timer.reset()
+    if (!showPanel)
+      timer.start()
     next(searchResult)
   }
 
