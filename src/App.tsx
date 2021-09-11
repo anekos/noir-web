@@ -211,7 +211,7 @@ function App() {
             : <NoImage />
         }
 
-        { !showPanel &&
+        { showPanel &&
             <div className="z-40 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
               <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
                 <div className="flex flex-row items-center w-full">
