@@ -152,6 +152,10 @@ function App() {
     }
   }
 
+  function ifNoPanel(f: (...args) => void) {
+    return showPanel ? () => void 0 : f
+  }
+
   useEffect(() => {
     search(searchExpression).then((result) => {
       const prefix = commonPathPrefix(result.items.map(it => it.file.path))
@@ -180,14 +184,12 @@ function App() {
     getAliases().then(setAliases)
   }, [])
 
-  console.log('render', selectedImage && selectedImage.file.path)
-
   return (
     <div className="App">
-      <EdgeButton extraClass="my-1 h-screen w-12" onClick={moveOnClick(true)} />
-      <EdgeButton extraClass="my-1 h-screen w-12 inset-y-0 right-0" onClick={moveOnClick(false)}/>
-      <EdgeButton extraClass="mx-1 w-screen h-12" onClick={nextOnClick}/>
-      <EdgeButton extraClass="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={nextOnClick}/>
+      <EdgeButton visible={!showPanel} extraClass="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick(true))} />
+      <EdgeButton visible={!showPanel} extraClass="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick(false))}/>
+      <EdgeButton visible={!showPanel} extraClass="mx-1 w-screen h-12" onClick={ifNoPanel(nextOnClick)}/>
+      <EdgeButton visible={!showPanel} extraClass="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={ifNoPanel(nextOnClick)}/>
 
       { showClock && <Clock /> }
 
