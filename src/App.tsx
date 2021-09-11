@@ -45,7 +45,7 @@ function CheckBox({caption, value, setter}: ICheckBox) {
 
   return (
     <div className="rounded-md bg-green-500 p-2 mr-2" onClick={onClickToggle(setter)}>
-      <input type="checkbox" className="mr-1" checked={value} />
+      <input type="checkbox" className="mr-1" checked={value} onChange={_ => null} />
       <label className="text-white font-bold ">{caption}</label>
     </div>
 
