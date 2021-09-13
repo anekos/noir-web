@@ -45,11 +45,23 @@ body {
   background-color: blue;
 }
 
-#search-expression {
-  font-size: 30px;
-  width: 80%;
+.edge-button:not(:hover) {
+  opacity: 0;
 }
 
-.hidden {
-  display: none;
+.edge-button:hover {
+  transition: opacity 0.5s ease-in;
+
+  animation-name: edge-button-animation;
+  animation-duration: 2s;
+  opacity: 0.0;
+}
+
+@keyframes edge-button-animation {
+    0% {
+        opacity: 0.8;
+    }
+    100% {
+        opacity: 0.0;
+    }
 }
