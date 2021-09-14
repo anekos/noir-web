@@ -29,6 +29,12 @@ export default function useImageHistory() {
         return true
       return state.position < state.items.length - 1
     },
+    get position(): number | null {
+      return state.position
+    },
+    get length(): number {
+      return state.items.length
+    },
     backward() {
       update(state => {
         if (state.position === null) {

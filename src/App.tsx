@@ -196,6 +196,7 @@ function App() {
       setSearching(false)
       setErrorMessage(it.toString())
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchExpression])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -236,6 +237,14 @@ function App() {
           <div className="absolute left-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-50 hover:opacity-90 text-bold text-white">
             { selectedImage.file.path.replace(pathPrefix, '') }
           </div> }
+
+      { (imageHistory.inThePast && imageHistory.position !== null) &&
+          <div className="absolute bottom-0 flex items-center justify-center w-screen m-2">
+            <div className=" z-50 rounded-md p-2 z-50 bg-gray-500 opacity-50 text-white hover:opacity-90 font-bold">
+              { imageHistory.position + 1 } / { imageHistory.length }
+            </div>
+          </div>
+      }
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
 
