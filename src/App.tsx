@@ -48,9 +48,9 @@ function CheckBox({caption, value, setter}: ICheckBox) {
   }
 
   return (
-    <div className="rounded-md bg-green-500 p-2 mr-2" onClick={onClickToggle(setter)}>
+    <div className="rounded-md bg-green-500 p-2 mr-2 cursor-pointer" onClick={onClickToggle(setter)}>
       <input type="checkbox" className="mr-1" checked={value} onChange={_ => null} />
-      <label className="text-white font-bold ">{caption}</label>
+      <label className="text-white font-bold cursor-pointer">{caption}</label>
     </div>
 
   )
@@ -171,6 +171,7 @@ function App() {
 
   function changeExpression(expression: string) {
     setSearchExpression(expression)
+    setExpressionBuffer(expression)
   }
 
   function historyOnClick(expression: string) {
@@ -220,6 +221,8 @@ function App() {
     getAliases().then(setAliases)
   }, [])
 
+  const expressionChanged = expressionBuffer !== searchExpression
+
   return (
     <div className="App">
       <EdgeButton visible={!showPanel} extraClass="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick(true))} />
@@ -258,7 +261,7 @@ function App() {
                       <div className="flex flex-row items-center w-full p-2">
                         <ul className="list-inside list-decimal">
                           { expressionHistory.items.map((exp, index) => {
-                              return (<li key={index} className="bg-green-500 rounded-md p-1 m-1 text-white" onClick={historyOnClick(exp)}>{exp}</li>)
+                              return (<li key={index} className="bg-green-500 rounded-md p-1 m-1 text-white cursor-pointer" onClick={historyOnClick(exp)}>{exp}</li>)
                           }) }
                         </ul>
                       </div>
@@ -276,11 +279,17 @@ function App() {
                           <input
                             type="button"
                             id="search-button"
-                            className="rounded-md p-2 bg-green-500 text-white font-bold mx-2"
+                            className={
+                              classNames(
+                                'rounded-md p-2 bg-green-500 font-bold mx-2',
+                                [expressionChanged ? 'text-white' : 'text-gray-200 line-through'],
+                                {'cursor-pointer': expressionChanged}
+                              )
+                            }
                             onClick={_ => changeExpression(expressionBuffer)}
                             value="Search" />
                           <div
-                            className="rounded-md p-2 bg-green-500 text-white font-bold"
+                            className="rounded-md p-2 bg-green-500 text-white font-bold cursor-pointer"
                             onClick={showHistoryOnClick}
                           >
                             <FontAwesomeIcon icon={faList} onClick={showHistoryOnClick}/>
