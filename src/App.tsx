@@ -1,6 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import './App.css'
 
+import '@fortawesome/fontawesome-free/js/fontawesome'
+import '@fortawesome/fontawesome-free/js/regular'
+import '@fortawesome/fontawesome-free/js/solid'
 import 'react-autocomplete-input/dist/bundle.css';
 import TextInput from 'react-autocomplete-input'
 import commonPathPrefix from 'common-path-prefix'
@@ -10,6 +13,7 @@ import { useTimer } from 'use-timer'
 
 import Clock from './ui/Clock'
 import EdgeButton from './ui/EdgeButton'
+import useExpressionHistory from './use-expression-history'
 import useImageHistory from './use-image-history'
 import { NoirImage, imageUrl } from './image'
 import { NoirSearchResult } from './search_result'
@@ -23,10 +27,10 @@ function selectImageRandomly(searchResult: NoirSearchResult): NoirImage | null {
   return searchResult.items[Math.floor(Math.random() * searchResult.items.length)]
 }
 
-function NoImage() {
+function Error({children}) {
   return (
     <span className="rounded-md bg-red-800 p-3 text-white font-bold">
-      No Image
+      {children}
     </span>
   )
 }
@@ -57,14 +61,17 @@ function App() {
 
   const [aliases, setAliases] = useState<string[]>([])
   const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
+  const [errorMessage, setErrorMessage] = useState<string|null>(null)
   const [loadingTries, setLoadingTryles] = useState<number>(0)
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
   const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
+  const [showHistory, setShowHistory] = useState<boolean>(false)
   const [showPanel, setShowPanel] = useState<boolean>(false)
   const [showPath, setShowPath] = useLocalStorage<boolean>('show-path', false)
   const [updateInterval, setUpdateInterval] = useLocalStorage<number>('update-interval', 60)
+  const expressionHistory = useExpressionHistory()
   const imageHistory = useImageHistory()
 
   const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
@@ -156,13 +163,33 @@ function App() {
     return showPanel ? () => void 0 : f
   }
 
+  function showHistoryOnClick() {
+    console.log('false')
+    setShowHistory(true)
+  }
+
+  function changeExpression(expression: string) {
+    setSearchExpression(expression)
+    expressionHistory.push(expression)
+  }
+
+  function historyOnClick(expression: string) {
+    return () => {
+      changeExpression(expression)
+      setShowPanel(false)
+    }
+  }
+
   useEffect(() => {
+    setSearchResult(null)
     search(searchExpression).then((result) => {
       const prefix = commonPathPrefix(result.items.map(it => it.file.path))
       const prefixPattern = new RegExp('^' + escapeStringRegexp(prefix))
       setSearchResult(result)
       setPathPrefix(prefixPattern)
       setShowPanel(false)
+    }).catch(it => {
+      setErrorMessage(it.toString())
     })
   }, [searchExpression])
 
@@ -179,6 +206,11 @@ function App() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageHistory.inThePast, autoNext, showPanel])
+
+  useEffect(() => {
+    if (!showPanel)
+      setShowHistory(false)
+  }, [showPanel])
 
   useEffect(() => {
     getAliases().then(setAliases)
@@ -210,63 +242,82 @@ function App() {
                   onError={imageOnError}
                   className="z-0" />
               </div>
-            : <NoImage />
+            : <Error>{errorMessage ? errorMessage : 'No Image'}</Error>
         }
 
         { showPanel &&
             <div className="z-40 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
-              <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
-                <div className="flex flex-row items-center w-full">
-                  <TextInput
-                    options={aliases}
-                    trigger="@"
-                    changeOnSelect={(trigger, suffix) => suffix}
-                    onChange={expressionOnChange}
-                    value={expressionBuffer}
-                    className="rounded-md block m-2 font-bold flex-1 h-8 p-2 w-96 h-20" />
-                  <input
-                    type="button"
-                    id="search-button"
-                    className="rounded-md p-2 bg-green-500 text-white font-bold m-2"
-                    onClick={_ => setSearchExpression(expressionBuffer)}
-                    value="Search" />
-                </div>
-                <div className="flex flex-row items-center m-2">
-                  <CheckBox caption="Interval" value={autoNext} setter={setAutoNext} />
-                  <InputNumber
-                    placeholder="Interval"
-                    defaultValue={updateInterval}
-                    onBlur={intervalOnChange}
-                    min={1}
-                  />
-                </div>
-                <div className="flex flex-row items-center">
-                  <CheckBox caption="Path" value={showPath} setter={setShowPath} />
-                  <CheckBox caption="Clock" value={showClock} setter={setShowClock} />
-                  <input
-                    type="button"
-                    className="rounded-md p-2 bg-green-500 text-white font-bold m-2"
-                    onClick={fullscreenOnClick}
-                    value="Fullscreen" />
-                </div>
-              </div>
-
-              { selectedImage &&
-                  <div className="z-30 bg-gray-500 p-2 opacity-90 rounded-md flex flex-col items-center w-full mt-2">
-                    <div className="flex flex-row items-center mb-1">
-                      <div>
-                        { searchResult &&
-                            <div className="font-bold text-white">
-                              { searchResult.items.length } images
-                            </div>
-                        }
+              { showHistory
+                  ? <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
+                      <div className="flex flex-row items-center w-full p-2">
+                        <ul className="list-inside list-decimal">
+                          { expressionHistory.items.map((exp, index) => {
+                              return (<li key={index} className="bg-green-500 rounded-md p-1 m-1 text-white" onClick={historyOnClick(exp)}>{exp}</li>)
+                          }) }
+                        </ul>
                       </div>
                     </div>
-                    <textarea
-                      className="w-full bg-gray-300"
-                      rows={12}
-                      defaultValue={JSON.stringify(selectedImage, null, '  ')} />
-                  </div>
+                  : <>
+                      <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
+                        <div className="flex flex-row items-center w-full m-1 p-1">
+                          <TextInput
+                            options={aliases}
+                            trigger="@"
+                            changeOnSelect={(trigger, suffix) => suffix}
+                            onChange={expressionOnChange}
+                            value={expressionBuffer}
+                            className="rounded-md block mx-2 font-bold flex-1 h-8 p-2 w-96 h-20" />
+                          <input
+                            type="button"
+                            id="search-button"
+                            className="rounded-md p-2 bg-green-500 text-white font-bold mx-2"
+                            onClick={_ => changeExpression(expressionBuffer)}
+                            value="Search" />
+                          <div
+                            className="rounded-md p-2 bg-green-500 text-white font-bold"
+                            onClick={showHistoryOnClick}
+                          >
+                            <i className="fas fa-list" onClick={showHistoryOnClick} />
+                          </div>
+                        </div>
+                        <div className="flex flex-row items-center m-1 p-1">
+                          <CheckBox caption="Interval" value={autoNext} setter={setAutoNext} />
+                          <InputNumber
+                            placeholder="Interval"
+                            defaultValue={updateInterval}
+                            onBlur={intervalOnChange}
+                            min={1}
+                          />
+                        </div>
+                        <div className="flex flex-row items-center m-1 p-1">
+                          <CheckBox caption="Path" value={showPath} setter={setShowPath} />
+                          <CheckBox caption="Clock" value={showClock} setter={setShowClock} />
+                          <input
+                            type="button"
+                            className="rounded-md p-2 bg-green-500 text-white font-bold"
+                            onClick={fullscreenOnClick}
+                            value="Fullscreen" />
+                        </div>
+                      </div>
+
+                      { selectedImage && 
+                          <div className="z-30 bg-gray-500 p-2 opacity-90 rounded-md flex flex-col items-center w-full mt-2">
+                            <div className="flex flex-row items-center mb-1">
+                              <div>
+                                { searchResult &&
+                                    <div className="font-bold text-white">
+                                      { searchResult.items.length } images
+                                    </div>
+                                }
+                              </div>
+                            </div>
+                            <textarea
+                              className="w-full bg-gray-300"
+                              rows={12}
+                              defaultValue={JSON.stringify(selectedImage, null, '  ')} />
+                          </div>
+                      }
+                    </>
               }
             </div>
           }
