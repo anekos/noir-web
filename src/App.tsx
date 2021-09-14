@@ -171,7 +171,6 @@ function App() {
 
   function changeExpression(expression: string) {
     setSearchExpression(expression)
-    expressionHistory.push(expression)
   }
 
   function historyOnClick(expression: string) {
@@ -191,6 +190,7 @@ function App() {
       setSearchResult(result)
       setPathPrefix(prefixPattern)
       setSearching(false)
+      expressionHistory.push(searchExpression)
     }).catch(it => {
       setSearching(false)
       setErrorMessage(it.toString())
