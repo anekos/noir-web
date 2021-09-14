@@ -1,5 +1,6 @@
 import { useLocalStorage } from './use-local-storage'
 
+const Limit = 20
 
 export default function useExpressionHistory() {
   const [items, setItems] = useLocalStorage<string[]>('expression-history', [])
@@ -8,7 +9,7 @@ export default function useExpressionHistory() {
     const e = expression.trim()
     const newItems: string[] = items.filter(it => e !== it)
     newItems.unshift(e)
-    setItems(newItems)
+    setItems(newItems.slice(0, Limit))
   }
 
   return {push, items}
