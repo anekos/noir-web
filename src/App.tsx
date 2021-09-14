@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from 'react'
 import './App.css'
 
-import '@fortawesome/fontawesome-free/js/fontawesome'
-import '@fortawesome/fontawesome-free/js/regular'
-import '@fortawesome/fontawesome-free/js/solid'
-import 'react-autocomplete-input/dist/bundle.css';
+import 'react-autocomplete-input/dist/bundle.css'
 import TextInput from 'react-autocomplete-input'
+import classNames from 'classnames'
 import commonPathPrefix from 'common-path-prefix'
 import escapeStringRegexp from 'escape-string-regexp'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faList, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { InputNumber } from "@supabase/ui"
 import { useTimer } from 'use-timer'
 
@@ -66,6 +66,7 @@ function App() {
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
   const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
+  const [searching, setSearching] = useState<boolean>(false)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
   const [showHistory, setShowHistory] = useState<boolean>(false)
   const [showPanel, setShowPanel] = useState<boolean>(false)
@@ -182,13 +183,16 @@ function App() {
 
   useEffect(() => {
     setSearchResult(null)
+    setSearching(true)
+    setShowPanel(false)
     search(searchExpression).then((result) => {
       const prefix = commonPathPrefix(result.items.map(it => it.file.path))
       const prefixPattern = new RegExp('^' + escapeStringRegexp(prefix))
       setSearchResult(result)
       setPathPrefix(prefixPattern)
-      setShowPanel(false)
+      setSearching(false)
     }).catch(it => {
+      setSearching(false)
       setErrorMessage(it.toString())
     })
   }, [searchExpression])
@@ -232,6 +236,8 @@ function App() {
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
 
+        { searching && <FontAwesomeIcon className="text-white" icon={faSpinner} size="6x" spin /> }
+
         { selectedImage
             ? <div className="w-screen h-screen absolute z-10">
                 <img
@@ -242,7 +248,7 @@ function App() {
                   onError={imageOnError}
                   className="z-0" />
               </div>
-            : <Error>{errorMessage ? errorMessage : 'No Image'}</Error>
+            : (searching || <Error>{errorMessage ? errorMessage : 'No Image'}</Error>)
         }
 
         { showPanel &&
@@ -277,7 +283,7 @@ function App() {
                             className="rounded-md p-2 bg-green-500 text-white font-bold"
                             onClick={showHistoryOnClick}
                           >
-                            <i className="fas fa-list" onClick={showHistoryOnClick} />
+                            <FontAwesomeIcon icon={faList} onClick={showHistoryOnClick}/>
                           </div>
                         </div>
                         <div className="flex flex-row items-center m-1 p-1">
