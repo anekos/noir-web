@@ -59,7 +59,6 @@
     "postcss": "^7.0.36",
     "react-autocomplete-input": "^1.0.18",
     "strftime": "^0.10.0",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.9",
-    "use-timer": "^2.0.1"
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.9"
   }
 }
