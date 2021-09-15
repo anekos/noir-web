@@ -22,7 +22,7 @@ export default function useConfigPanel() {
   const [showHistory, setShowHistory] = useState<boolean>(false)
   const [showPanel, setShowPanel] = useState<boolean>(false)
   const [showPath, setShowPath] = useLocalStorage<boolean>('show-path', false)
-  const [updateInterval, setUpdateInterval] = useLocalStorage<number>('update-interval', 60)
+  const [updateInterval, setUpdateInterval] = useLocalStorage<number | null>('update-interval', 60)
 
   const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
 
@@ -49,7 +49,10 @@ export default function useConfigPanel() {
     const newValue = parseInt(e.target.value)
     if (isNaN(newValue))
       return
-    setUpdateInterval(newValue)
+    if (newValue <= 0)
+      setUpdateInterval(null)
+    else
+      setUpdateInterval(newValue)
   }
 
   useEffect(() => {
