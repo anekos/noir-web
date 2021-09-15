@@ -13,6 +13,10 @@ import { useTimer } from 'use-timer'
 
 import Clock from './ui/Clock'
 import EdgeButton from './ui/EdgeButton'
+import ImagePath from './ui/ImagePath'
+import Position from './ui/Position'
+import CheckBox from './ui/CheckBox'
+import ErrorMessage from './ui/ErrorMessage'
 import useExpressionHistory from './use-expression-history'
 import useImageHistory from './use-image-history'
 import { NoirImage, imageUrl } from './image'
@@ -25,35 +29,6 @@ function selectImageRandomly(searchResult: NoirSearchResult): NoirImage | null {
   if (searchResult.items.length <= 0)
     return null
   return searchResult.items[Math.floor(Math.random() * searchResult.items.length)]
-}
-
-function Error({children}) {
-  return (
-    <span className="rounded-md bg-red-800 p-3 text-white font-bold">
-      {children}
-    </span>
-  )
-}
-
-interface ICheckBox {
-  caption: string
-  value: boolean
-  setter: (x: (y: boolean) => boolean) => void
-}
-function CheckBox({caption, value, setter}: ICheckBox) {
-  function onClickToggle(setter: (x: (y: boolean) => boolean) => void) {
-    return function () {
-      setter(it => !it)
-    }
-  }
-
-  return (
-    <div className="rounded-md bg-green-500 p-2 mr-2 cursor-pointer" onClick={onClickToggle(setter)}>
-      <input type="checkbox" className="mr-1" checked={value} onChange={_ => null} />
-      <label className="text-white font-bold cursor-pointer">{caption}</label>
-    </div>
-
-  )
 }
 
 function App() {
@@ -226,25 +201,16 @@ function App() {
 
   return (
     <div className="App">
-      <EdgeButton visible={!showPanel} extraClass="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick(true))} />
-      <EdgeButton visible={!showPanel} extraClass="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick(false))}/>
-      <EdgeButton visible={!showPanel} extraClass="mx-1 w-screen h-12" onClick={ifNoPanel(nextOnClick)}/>
-      <EdgeButton visible={!showPanel} extraClass="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={ifNoPanel(nextOnClick)}/>
+      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick(true))} />
+      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick(false))}/>
+      <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12" onClick={ifNoPanel(nextOnClick)}/>
+      <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={ifNoPanel(nextOnClick)}/>
 
       { showClock && <Clock /> }
+      { showPath && selectedImage && <ImagePath pathPrefix={pathPrefix} image={selectedImage} /> }
 
-      { showPath && selectedImage &&
-          <div className="absolute left-0 bottom-0 m-2 rounded-md p-2 z-50 bg-gray-500 opacity-50 hover:opacity-90 text-bold text-white">
-            { selectedImage.file.path.replace(pathPrefix, '') }
-          </div> }
-
-      { (imageHistory.inThePast && imageHistory.position !== null) &&
-          <div className="absolute bottom-0 flex items-center justify-center w-screen m-2">
-            <div className=" z-50 rounded-md p-2 z-50 bg-gray-500 opacity-50 text-white hover:opacity-90 font-bold">
-              { imageHistory.position + 1 } / { imageHistory.length }
-            </div>
-          </div>
-      }
+      { (imageHistory.inThePast && imageHistory.position !== null) && 
+          <Position current={ imageHistory.position + 1 } last={imageHistory.length} /> }
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
 
@@ -260,7 +226,7 @@ function App() {
                   onError={imageOnError}
                   className="z-0" />
               </div>
-            : (searching || <Error>{errorMessage ? errorMessage : 'No Image'}</Error>)
+            : (searching || <ErrorMessage>{errorMessage ? errorMessage : 'No Image'}</ErrorMessage>)
         }
 
         { showPanel &&
