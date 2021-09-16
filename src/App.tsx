@@ -4,6 +4,7 @@ import './App.css'
 import 'react-autocomplete-input/dist/bundle.css'
 import commonPathPrefix from 'common-path-prefix'
 import escapeStringRegexp from 'escape-string-regexp'
+import useKeypress from 'react-use-keypress'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 
@@ -78,10 +79,10 @@ function App() {
     setShowPanel((it: boolean) => !it)
   }
 
-  function moveOnClick(backword: boolean) {
+  function moveOnClick(method: string) {
     return function() {
-      if (imageHistory.inThePast || backword)
-        imageHistory[backword ? 'backward' : 'forward']()
+      if (imageHistory.inThePast || method !== 'forward')
+        imageHistory[method]()
       else
         return next()
     }
@@ -108,13 +109,18 @@ function App() {
     if (showPanel)
       return
     if (0 < e.deltaY) {
-      moveOnClick(false)()
+      moveOnClick('forward')()
     } else if (e.deltaY < 0) {
-      moveOnClick(true)()
+      moveOnClick('backward')()
     }
   }
 
   const ifNoPanel = (f: (...args: any) => void) => (showPanel ? () => void 0 : f)
+
+  useKeypress('j', ifNoPanel(moveOnClick('forward')))
+  useKeypress('k', ifNoPanel(moveOnClick('backward')))
+  useKeypress('g', ifNoPanel(moveOnClick('first')))
+  useKeypress('G', ifNoPanel(moveOnClick('last')))
 
   useEffect(() => {
     setSearchResult(null)
@@ -145,8 +151,8 @@ function App() {
 
   return (
     <div className="App" onWheel={onWheel}>
-      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick(true))} />
-      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick(false))}/>
+      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick('forward'))} />
+      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick('backward'))}/>
       <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12" onClick={ifNoPanel(next)}/>
       <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={ifNoPanel(next)}/>
 

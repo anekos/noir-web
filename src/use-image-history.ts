@@ -48,6 +48,12 @@ export default function useImageHistory() {
         state.position--
       })
     },
+    first () {
+      update(state => {
+        if (0 < state.items.length)
+          state.position = 0
+      })
+    },
     forward () {
       update(state => {
         if (state.position === null)
@@ -59,6 +65,13 @@ export default function useImageHistory() {
     },
     hide() {
       update(state => state.position = null)
+    },
+    last () {
+      update(state => {
+        if (state.items.length <= 0)
+          return
+        state.position = state.items.length - 1
+      })
     },
     push(image: NoirImage, show: boolean) {
       update(state => {
