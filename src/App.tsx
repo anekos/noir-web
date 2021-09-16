@@ -105,6 +105,8 @@ function App() {
   }
 
   function onWheel(e: React.WheelEvent<HTMLDivElement>) {
+    if (showPanel)
+      return
     if (0 < e.deltaY) {
       moveOnClick(false)()
     } else if (e.deltaY < 0) {
