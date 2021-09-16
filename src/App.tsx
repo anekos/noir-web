@@ -104,6 +104,14 @@ function App() {
     }
   }
 
+  function onWheel(e: React.WheelEvent<HTMLDivElement>) {
+    if (0 < e.deltaY) {
+      moveOnClick(false)()
+    } else if (e.deltaY < 0) {
+      moveOnClick(true)()
+    }
+  }
+
   const ifNoPanel = (f: (...args: any) => void) => (showPanel ? () => void 0 : f)
 
   useEffect(() => {
@@ -134,7 +142,7 @@ function App() {
   }, [searchExpression])
 
   return (
-    <div className="App">
+    <div className="App" onWheel={onWheel}>
       <EdgeButton visible={!showPanel} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick(true))} />
       <EdgeButton visible={!showPanel} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick(false))}/>
       <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12" onClick={ifNoPanel(next)}/>
