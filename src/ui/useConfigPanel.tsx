@@ -23,7 +23,6 @@ export default function useConfigPanel() {
   const [showPanel, setShowPanel] = useState<boolean>(false)
   const [showPath, setShowPath] = useLocalStorage<boolean>('show-path', false)
   const [updateInterval, setUpdateInterval] = useLocalStorage<number | null>('update-interval', 60)
-
   const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
 
   function changeExpression(expression: string) {
@@ -64,6 +63,10 @@ export default function useConfigPanel() {
       setShowHistory(false)
   }, [showPanel])
 
+  useEffect(() => {
+    setExpressionBuffer(searchExpression)
+  }, [searchExpression])
+
   const expressionChanged = expressionBuffer !== searchExpression
 
   const ConfigPanel = (
@@ -75,6 +78,7 @@ export default function useConfigPanel() {
           changeOnSelect={(trigger, suffix) => suffix}
           onChange={setExpressionBuffer}
           value={expressionBuffer}
+          maxOptions={20}
           className="rounded-md block mx-2 font-bold flex-1 h-8 p-2 w-96 h-20" />
         <input
           type="button"

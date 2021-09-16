@@ -14,6 +14,7 @@ import ErrorMessage from './ui/ErrorMessage'
 import ImageMeta from './ui/ImageMeta'
 import ImagePath from './ui/ImagePath'
 import Position from './ui/Position'
+import useBufferedImage from './ui/use-buffered-image'
 import useConfigPanel from './ui/useConfigPanel'
 import useExpressionHistory from './use-expression-history'
 import useImageHistory from './use-image-history'
@@ -30,6 +31,7 @@ function selectImageRandomly(searchResult: NoirSearchResult): NoirImage | null {
 }
 
 function App() {
+  // Hooks {{{
   const [errorMessage, setErrorMessage] = useState<string|null>(null)
   const [loadingTries, setLoadingTryles] = useState<number>(0)
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
@@ -56,8 +58,56 @@ function App() {
     () => next()
   )
 
-  const selectedImage: NoirImage | null = imageHistory.currentImage
+  const {Img, setUrl} = useBufferedImage({
+    id: "noir-image",
+    onLoad: imageOnLoad,
+    onError: imageOnError,
+    className: "z-0"
+  })
 
+  const selectedImage: NoirImage | null = imageHistory.currentImage
+  const ifNoPanel = (f: (...args: any) => void) => (showPanel ? () => void 0 : f)
+
+  useKeypress('j', ifNoPanel(moveOnClick('forward')))
+  useKeypress('k', ifNoPanel(moveOnClick('backward')))
+  useKeypress('g', ifNoPanel(moveOnClick('first')))
+  useKeypress('G', ifNoPanel(moveOnClick('last')))
+
+  useEffect(() => {
+    setSearchResult(null)
+    setSearching(true)
+    setShowPanel(false)
+    setErrorMessage(null)
+
+    search(searchExpression).then((result) => {
+
+      const prefix = commonPathPrefix(result.items.map(it => it.file.path))
+      const prefixPattern = new RegExp('^' + escapeStringRegexp(prefix))
+
+      setSearchResult(result)
+      setPathPrefix(prefixPattern)
+      setSearching(false)
+
+      expressionHistory.push(searchExpression)
+
+      const selectedImage = selectImageRandomly(result)
+      if (selectedImage !== null)
+        imageHistory.push(selectedImage, true)
+    }).catch(it => {
+      setSearching(false)
+      setErrorMessage(it.toString())
+    })
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchExpression])
+
+  useEffect(() => {
+    if (selectedImage)
+      setUrl(imageUrl(selectedImage))
+  }, [selectedImage, setUrl])
+  // }}}
+
+  // Event Handlers {{{
   function imageOnLoad(_: any) {
     setLoadingTryles(0)
   }
@@ -114,40 +164,57 @@ function App() {
       moveOnClick('backward')()
     }
   }
+  // }}}
 
-  const ifNoPanel = (f: (...args: any) => void) => (showPanel ? () => void 0 : f)
+  // Component {{{
+  function Image({image}) {
+    console.log(imageUrl(image))
+    return (
+      <div className="w-screen h-screen absolute z-10">
+        { Img() }
+      </div>)
+  }
 
-  useKeypress('j', ifNoPanel(moveOnClick('forward')))
-  useKeypress('k', ifNoPanel(moveOnClick('backward')))
-  useKeypress('g', ifNoPanel(moveOnClick('first')))
-  useKeypress('G', ifNoPanel(moveOnClick('last')))
+  function Content() {
+    if (searching)
+      return (<FontAwesomeIcon className="text-white" icon={faSpinner} size="6x" spin />)
 
-  useEffect(() => {
-    setSearchResult(null)
-    setSearching(true)
-    setShowPanel(false)
+    if (errorMessage)
+      return (<ErrorMessage>{errorMessage}</ErrorMessage>)
 
-    search(searchExpression).then((result) => {
+    if (selectedImage)
+      return (<Image image={selectedImage}/>)
 
-      const prefix = commonPathPrefix(result.items.map(it => it.file.path))
-      const prefixPattern = new RegExp('^' + escapeStringRegexp(prefix))
+    return (<ErrorMessage>No Image</ErrorMessage>)
+  }
 
-      setSearchResult(result)
-      setPathPrefix(prefixPattern)
-      setSearching(false)
+  function HistoryPanel() {
+    return (
+      <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
+        <div className="flex flex-row items-center w-full p-2">
+          <ul className="list-inside list-decimal">
+            { expressionHistory.items.map((exp: string, index: number) => {
+              return (<li key={index} className="bg-green-500 rounded-md p-1 m-1 text-white cursor-pointer" onClick={historyOnClick(exp)}>{exp}</li>)
+            }) }
+          </ul>
+        </div>
+      </div>
+    )
+  }
 
-      expressionHistory.push(searchExpression)
-
-      const selectedImage = selectImageRandomly(result)
-      if (selectedImage !== null)
-        imageHistory.push(selectedImage, true)
-    }).catch(it => {
-      setSearching(false)
-      setErrorMessage(it.toString())
-    })
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchExpression])
+  const Panel = () => {
+    if (showHistory)
+      return (<HistoryPanel />)
+    if (showPanel)
+      return (
+        <>
+          { ConfigPanel }
+          { selectedImage && searchResult && <ImageMeta image={selectedImage} images={searchResult.items.length} /> }
+        </>
+      )
+    return (<></>)
+  }
+  // }}}
 
   return (
     <div className="App" onWheel={onWheel}>
@@ -159,48 +226,14 @@ function App() {
       { showClock && <Clock /> }
       { showPath && selectedImage && <ImagePath pathPrefix={pathPrefix} image={selectedImage} /> }
 
-      { (imageHistory.inThePast && imageHistory.position !== null) && 
+      { (imageHistory.inThePast && imageHistory.position !== null) &&
           <Position current={ imageHistory.position + 1 } last={imageHistory.length} /> }
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
-
-        { searching && <FontAwesomeIcon className="text-white" icon={faSpinner} size="6x" spin /> }
-
-        { selectedImage
-            ? <div className="w-screen h-screen absolute z-10">
-                <img
-                  src={imageUrl(selectedImage)}
-                  id="noir-image"
-                  alt={selectedImage.format}
-                  onLoad={imageOnLoad}
-                  onError={imageOnError}
-                  className="z-0" />
-              </div>
-            : (searching || <ErrorMessage>{errorMessage ? errorMessage : 'No Image'}</ErrorMessage>)
-        }
-
-        { showPanel &&
-            <div className="z-40 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
-
-              { showHistory
-                  ? <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
-                      <div className="flex flex-row items-center w-full p-2">
-                        <ul className="list-inside list-decimal">
-                          { expressionHistory.items.map((exp: string, index: number) => {
-                              return (<li key={index} className="bg-green-500 rounded-md p-1 m-1 text-white cursor-pointer" onClick={historyOnClick(exp)}>{exp}</li>)
-                          }) }
-                        </ul>
-                      </div>
-                    </div>
-                 : <>
-                    {ConfigPanel}
-                   { selectedImage && searchResult &&
-                     <ImageMeta image={selectedImage} images={searchResult.items.length} /> }
-                   </>
-              }
-            </div>
-          }
-
+        <Content />
+        <div className="z-40 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
+          { Panel() }
+        </div>
       </div>
     </div>
   );
