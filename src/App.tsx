@@ -218,8 +218,8 @@ function App() {
 
   return (
     <div className="App" onWheel={onWheel}>
-      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick('forward'))} />
-      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick('backward'))}/>
+      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick('backward'))} />
+      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick('forward'))}/>
       <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12" onClick={ifNoPanel(next)}/>
       <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12 inset-x-0 bottom-0" onClick={ifNoPanel(next)}/>
 
