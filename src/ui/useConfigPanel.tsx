@@ -7,6 +7,7 @@ import { InputNumber } from "@supabase/ui"
 import { faList } from '@fortawesome/free-solid-svg-icons'
 
 import CheckBox from './CheckBox'
+import { SearchHistory } from '../api'
 import { getAliases, getTags } from '../api'
 import { useLocalStorage } from '../use-local-storage'
 
@@ -29,7 +30,7 @@ function sortIgnoreCase(lst: string[]): string[] {
 }
 
 
-export default function useConfigPanel() {
+export default function useConfigPanel(history: SearchHistory[]) {
   const [aliases, setAliases] = useState<string[]>([])
   const [tags, setTags] = useState<string[]>([])
   const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
@@ -83,19 +84,20 @@ export default function useConfigPanel() {
   }, [searchExpression])
 
   function changeOnSelect(trigger, suffix) {
-    if (trigger === '@')
+    if (trigger === '@' || trigger === '!')
       return suffix
     return trigger + suffix
   }
 
   const expressionChanged = expressionBuffer !== searchExpression
+  const expressions = history.map(it => it.expression)
 
   const ConfigPanel = (
     <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
       <div className="flex flex-row items-center w-full m-1 p-1">
         <TextInput
-          options={{'@': aliases, '#': tags}}
-          trigger={['@', '#']}
+          options={{'@': aliases, '#': tags, '!': expressions}}
+          trigger={['@', '#', '!']}
           changeOnSelect={changeOnSelect}
           onChange={setExpressionBuffer}
           value={expressionBuffer}

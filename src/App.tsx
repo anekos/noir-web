@@ -39,6 +39,8 @@ function App() {
   const [searching, setSearching] = useState<boolean>(false)
   const imageHistory = useImageHistory()
 
+  const expressionHistory = useExpressionHistory()
+
   const {
     ConfigPanel,
     autoNext,
@@ -50,9 +52,7 @@ function App() {
     showPanel,
     showPath,
     updateInterval,
-  } = useConfigPanel()
-
-  const expressionHistory = useExpressionHistory()
+  } = useConfigPanel(expressionHistory.items)
 
   useInterval(
     (showPanel || !searchResult || imageHistory.inThePast || !autoNext) ? null : updateInterval,
