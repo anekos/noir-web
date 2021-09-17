@@ -1,17 +1,19 @@
-import { useLocalStorage } from './use-local-storage'
+import {useState, useEffect} from 'react'
 
-const Limit = 20
+import { getHistory, SearchHistory } from './api'
+
 
 export default function useExpressionHistory() {
-  const [items, setItems] = useLocalStorage<string[]>('expression-history', [])
+  const [items, setItems] = useState<SearchHistory[]>([])
+  const [tick, setTick] = useState<number>(0)
 
-  function push(expression: string) {
-    const e = expression.trim()
-    const newItems: string[] = items.filter(it => e !== it)
-    newItems.unshift(e)
-    setItems(newItems.slice(0, Limit))
+  useEffect(() => {
+    getHistory().then(setItems)
+  }, [tick])
+
+  function refresh() {
+    setTick(it => it + 1)
   }
 
-  return {push, items}
+  return {items, refresh}
 }
-

@@ -21,7 +21,7 @@ import useImageHistory from './use-image-history'
 import useInterval from './use-interval'
 import { NoirImage, imageUrl } from './image'
 import { NoirSearchResult } from './search_result'
-import { search } from './api'
+import { search, SearchHistory } from './api'
 
 
 function selectImageRandomly(searchResult: NoirSearchResult): NoirImage | null {
@@ -37,7 +37,6 @@ function App() {
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
   const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
   const [searching, setSearching] = useState<boolean>(false)
-  const expressionHistory = useExpressionHistory()
   const imageHistory = useImageHistory()
 
   const {
@@ -52,6 +51,8 @@ function App() {
     showPath,
     updateInterval,
   } = useConfigPanel()
+
+  const expressionHistory = useExpressionHistory()
 
   useInterval(
     (showPanel || !searchResult || imageHistory.inThePast || !autoNext) ? null : updateInterval,
@@ -87,8 +88,7 @@ function App() {
       setSearchResult(result)
       setPathPrefix(prefixPattern)
       setSearching(false)
-
-      expressionHistory.push(searchExpression)
+      expressionHistory.refresh()
 
       const selectedImage = selectImageRandomly(result)
       if (selectedImage !== null)
@@ -168,7 +168,6 @@ function App() {
 
   // Component {{{
   function Image({image}) {
-    console.log(imageUrl(image))
     return (
       <div className="w-screen h-screen absolute z-10">
         { Img() }
@@ -193,8 +192,8 @@ function App() {
       <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
         <div className="flex flex-row items-center w-full p-2">
           <ul className="list-inside list-decimal">
-            { expressionHistory.items.map((exp: string, index: number) => {
-              return (<li key={index} className="bg-green-500 rounded-md p-1 m-1 text-white cursor-pointer" onClick={historyOnClick(exp)}>{exp}</li>)
+            { expressionHistory.items.map((history: SearchHistory, index: number) => {
+              return (<li key={index} className="bg-green-500 rounded-md p-1 m-1 text-white cursor-pointer" onClick={historyOnClick(history.expression)}>{history.expression}</li>)
             }) }
           </ul>
         </div>
