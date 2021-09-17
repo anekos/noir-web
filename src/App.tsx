@@ -193,7 +193,14 @@ function App() {
         <div className="flex flex-row items-center w-full p-2">
           <ul className="list-inside list-decimal">
             { expressionHistory.items.map((history: SearchHistory, index: number) => {
-              return (<li key={index} className="bg-green-500 rounded-md p-1 m-1 text-white cursor-pointer" onClick={historyOnClick(history.expression)}>{history.expression}</li>)
+              return (
+                <li
+                  key={index}
+                  className="bg-green-500 rounded-md p-1 m-1 text-white cursor-pointer"
+                  onClick={historyOnClick(history.expression)} >
+                  {history.expression} <span className="text-gray-500">({history.uses})</span>
+                </li>
+              )
             }) }
           </ul>
         </div>
