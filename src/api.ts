@@ -8,6 +8,12 @@ export async function getAliases(): Promise<string[]> {
   }).then(it => it.json());
 }
 
+export async function getTags(): Promise<string[]> {
+  return fetch(`${ApiEndPoint}/tags`, {
+    method: 'GET',
+  }).then(it => it.json());
+}
+
 export async function search(expression: string): Promise<NoirSearchResult> {
   return fetch(`${ApiEndPoint}/search`, {
     method: 'POST',

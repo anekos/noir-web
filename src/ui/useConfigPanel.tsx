@@ -7,15 +7,31 @@ import { InputNumber } from "@supabase/ui"
 import { faList } from '@fortawesome/free-solid-svg-icons'
 
 import CheckBox from './CheckBox'
-import { getAliases } from '../api'
+import { getAliases, getTags } from '../api'
 import { useLocalStorage } from '../use-local-storage'
 
 
 const DefaultExpression = "path like '%wallpaper%'"
 
 
+function sortIgnoreCase(lst: string[]): string[] {
+  function cmp(a: string, b: string): number {
+    const ua = a.toUpperCase()
+    const ub = b.toUpperCase()
+    if (ua < ub)
+      return -1
+    if (ua > ub)
+      return 1
+    return 0
+  }
+
+  return Array.from(lst).sort(cmp)
+}
+
+
 export default function useConfigPanel() {
   const [aliases, setAliases] = useState<string[]>([])
+  const [tags, setTags] = useState<string[]>([])
   const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
@@ -54,9 +70,8 @@ export default function useConfigPanel() {
       setUpdateInterval(newValue)
   }
 
-  useEffect(() => {
-    getAliases().then(setAliases)
-  }, [])
+  useEffect(() => { getAliases().then(sortIgnoreCase).then(setAliases) }, [])
+  useEffect(() => { getTags().then(sortIgnoreCase).then(setTags) }, [])
 
   useEffect(() => {
     if (!showPanel)
@@ -67,15 +82,21 @@ export default function useConfigPanel() {
     setExpressionBuffer(searchExpression)
   }, [searchExpression])
 
+  function changeOnSelect(trigger, suffix) {
+    if (trigger === '@')
+      return suffix
+    return trigger + suffix
+  }
+
   const expressionChanged = expressionBuffer !== searchExpression
 
   const ConfigPanel = (
     <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
       <div className="flex flex-row items-center w-full m-1 p-1">
         <TextInput
-          options={aliases}
-          trigger="@"
-          changeOnSelect={(trigger, suffix) => suffix}
+          options={{'@': aliases, '#': tags}}
+          trigger={['@', '#']}
+          changeOnSelect={changeOnSelect}
           onChange={setExpressionBuffer}
           value={expressionBuffer}
           maxOptions={20}
