@@ -37,6 +37,7 @@ function App() {
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
   const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
   const [searching, setSearching] = useState<boolean>(false)
+  const [firstSearch, setFirstSearch] = useState<boolean>(true)
   const imageHistory = useImageHistory()
 
   const expressionHistory = useExpressionHistory()
@@ -79,9 +80,9 @@ function App() {
     setSearching(true)
     setShowPanel(false)
     setErrorMessage(null)
+    setFirstSearch(false)
 
-    search(searchExpression).then((result) => {
-
+    search(searchExpression, !firstSearch).then((result) => {
       const prefix = commonPathPrefix(result.items.map(it => it.file.path))
       const prefixPattern = new RegExp('^' + escapeStringRegexp(prefix))
 

@@ -24,12 +24,12 @@ export async function getTags(): Promise<string[]> {
   }).then(it => it.json());
 }
 
-export async function search(expression: string): Promise<NoirSearchResult> {
+export async function search(expression: string, record: boolean): Promise<NoirSearchResult> {
   return fetch(`${ApiEndPoint}/search`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({expression}),
+    body: JSON.stringify({expression, record}),
   }).then(it => it.json());
 }
