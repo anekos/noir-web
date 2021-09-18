@@ -32,14 +32,16 @@ function sortIgnoreCase(lst: string[]): string[] {
 
 export default function useConfigPanel(history: SearchHistory[]) {
   const [aliases, setAliases] = useState<string[]>([])
-  const [tags, setTags] = useState<string[]>([])
   const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
   const [showHistory, setShowHistory] = useState<boolean>(false)
   const [showPanel, setShowPanel] = useState<boolean>(false)
   const [showPath, setShowPath] = useLocalStorage<boolean>('show-path', false)
+  const [shuffle, setShuffle] = useLocalStorage<boolean>('shuffle', true)
+  const [tags, setTags] = useState<string[]>([])
   const [updateInterval, setUpdateInterval] = useLocalStorage<number | null>('update-interval', 60)
+
   const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
 
   function changeExpression(expression: string) {
@@ -134,6 +136,7 @@ export default function useConfigPanel(history: SearchHistory[]) {
       <div className="flex flex-row items-center m-1 p-1">
         <CheckBox caption="Path" value={showPath} setter={setShowPath} />
         <CheckBox caption="Clock" value={showClock} setter={setShowClock} />
+        <CheckBox caption="Shuffle" value={shuffle} setter={setShuffle} />
         <input
           type="button"
           className="rounded-md p-2 bg-green-500 text-white font-bold"
@@ -153,6 +156,7 @@ export default function useConfigPanel(history: SearchHistory[]) {
     showHistory,
     showPanel,
     showPath,
+    shuffle,
     updateInterval,
   }
 }

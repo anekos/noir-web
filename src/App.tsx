@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import './App.css'
 
 import 'react-autocomplete-input/dist/bundle.css'
+import arrayShuffle from 'array-shuffle'
 import commonPathPrefix from 'common-path-prefix'
 import escapeStringRegexp from 'escape-string-regexp'
 import useKeypress from 'react-use-keypress'
@@ -24,12 +25,6 @@ import { NoirSearchResult } from './search_result'
 import { search, SearchHistory } from './api'
 
 
-function selectImageRandomly(searchResult: NoirSearchResult): NoirImage | null {
-  if (searchResult.items.length <= 0)
-    return null
-  return searchResult.items[Math.floor(Math.random() * searchResult.items.length)]
-}
-
 function App() {
   // Hooks {{{
   const [errorMessage, setErrorMessage] = useState<string|null>(null)
@@ -38,7 +33,7 @@ function App() {
   const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
   const [searching, setSearching] = useState<boolean>(false)
   const [firstSearch, setFirstSearch] = useState<boolean>(true)
-  const imageHistory = useImageHistory()
+  const imageHistory = useImageHistory(searchResult && searchResult.items)
 
   const expressionHistory = useExpressionHistory()
 
@@ -52,11 +47,12 @@ function App() {
     showHistory,
     showPanel,
     showPath,
+    shuffle,
     updateInterval,
   } = useConfigPanel(expressionHistory.items)
 
   useInterval(
-    (showPanel || !searchResult || imageHistory.inThePast || !autoNext) ? null : updateInterval,
+    (showPanel || !searchResult || !autoNext) ? null : updateInterval,
     () => next()
   )
 
@@ -74,7 +70,7 @@ function App() {
   useKeypress('k', ifNoPanel(moveOnClick('backward')))
   useKeypress('g', ifNoPanel(moveOnClick('first')))
   useKeypress('G', ifNoPanel(moveOnClick('last')))
-  useKeypress('Escape', _ => setShowPanel(false))
+  useKeypress('Escape', () => setShowPanel(false))
 
   useEffect(() => {
     setSearchResult(null)
@@ -84,17 +80,14 @@ function App() {
     setFirstSearch(false)
 
     search(searchExpression, !firstSearch).then((result) => {
-      const prefix = commonPathPrefix(result.items.map(it => it.file.path))
+      if (shuffle)
+        result.items = arrayShuffle(result.items)
+      const prefix = commonPathPrefix(result.items.map(it => it.file.path).slice(0, 100))
       const prefixPattern = new RegExp('^' + escapeStringRegexp(prefix))
-
       setSearchResult(result)
       setPathPrefix(prefixPattern)
       setSearching(false)
       expressionHistory.refresh()
-
-      const selectedImage = selectImageRandomly(result)
-      if (selectedImage !== null)
-        imageHistory.push(selectedImage, true)
     }).catch(it => {
       setSearching(false)
       setErrorMessage(it.toString())
@@ -121,9 +114,7 @@ function App() {
       return
     console.log('retry to load', {tries: loadingTries})
     setLoadingTryles(loadingTries + 1)
-    const image = selectImageRandomly(searchResult)
-    if (image !== null)
-      imageHistory.push(image, true)
+    imageHistory.forward()
   }
 
   function showPanelOnClick(e: React.MouseEvent<HTMLElement>) {
@@ -133,21 +124,11 @@ function App() {
 
   function moveOnClick(method: string) {
     return function() {
-      if (imageHistory.inThePast || method !== 'forward')
-        imageHistory[method]()
-      else
-        return next()
+      imageHistory[method]()
     }
   }
 
-  function next () {
-    if (!searchResult || searchResult.items.length <= 0) {
-      imageHistory.hide()
-      return
-    }
-    const image = selectImageRandomly(searchResult)
-    if (image)
-      imageHistory.push(image, true)
+  function next() {
   }
 
   function historyOnClick(expression: string) {
@@ -234,7 +215,7 @@ function App() {
       { showClock && <Clock /> }
       { showPath && selectedImage && <ImagePath pathPrefix={pathPrefix} image={selectedImage} /> }
 
-      { (imageHistory.inThePast && imageHistory.position !== null) &&
+      { (imageHistory.position !== null) &&
           <Position current={ imageHistory.position + 1 } last={imageHistory.length} /> }
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>

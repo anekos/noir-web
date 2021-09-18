@@ -1,87 +1,64 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 
 import { NoirImage } from './image'
 
 
-interface History {
-  items: NoirImage[]
-  position: number | null
-}
+export default function useImageHistory(images: NoirImage[] | null) {
+  const [position, setPosition] = useState<number|null>(null)
 
-
-export default function useImageHistory() {
-  const [state, setState] = useState<History>({items: [], position: null})
-
-  function update(modify: (a: History) => void) {
-    const next: History = Object.create(state)
-    modify(next)
-    setState(next)
-  }
+  useEffect(() => {
+    if (!images || images.length === 0)
+      setPosition(null)
+    else
+      setPosition(0)
+  }, [images])
 
   return {
     get currentImage(): NoirImage | null {
-      if (state.position === null || state.position < 0 || state.items.length <= state.position)
-          return null
-      return state.items[state.position]
-    },
-    get inThePast(): boolean {
-      if (state.position === null)
-        return true
-      return state.position < state.items.length - 1
+      if (images === null || position === null)
+        return null
+      if (position < 0)
+        return null
+      if (images.length <= position)
+        return null
+      return images[position]
     },
     get position(): number | null {
-      return state.position
+      return position
     },
     get length(): number {
-      return state.items.length
+      return images ? images.length : 0
     },
     backward() {
-      update(state => {
-        if (state.position === null) {
-          if (state.items.length === 0)
-            return
-          state.position = state.items.length - 1
-          return
-        }
-        if (state.position < 1)
-          return
-        state.position--
-      })
+      if (position === null || images === null || position === 0)
+        return
+      setPosition(position - 1)
     },
     first () {
-      update(state => {
-        if (0 < state.items.length)
-          state.position = 0
-      })
+      if (position === null || images === null || images.length <= 0)
+        return
+      setPosition(0)
     },
     forward () {
-      update(state => {
-        if (state.position === null)
-          return
-        if (state.items.length <= (state.position + 1))
-          return
-        state.position++
-      })
+      if (position === null || images === null)
+        return
+      if (images.length - 1 <= position)
+        return
+      setPosition(position + 1)
     },
     hide() {
-      update(state => state.position = null)
+      setPosition(null)
     },
     last () {
-      update(state => {
-        if (state.items.length <= 0)
-          return
-        state.position = state.items.length - 1
-      })
-    },
-    push(image: NoirImage, show: boolean) {
-      update(state => {
-        state.items.push(image)
-        if (show)
-          state.position = state.items.length - 1
-      })
+      if (position === null || images === null)
+        return
+      setPosition(images.length - 1)
     },
     reset () {
-      update(state => state.position = 0)
+      if (images && 0 < images.length)
+        setPosition(0)
+      else
+        setPosition(null)
     },
   }
 }
