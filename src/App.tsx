@@ -129,6 +129,7 @@ function App() {
   }
 
   function next() {
+    imageHistory.forward()
   }
 
   function historyOnClick(expression: string) {
