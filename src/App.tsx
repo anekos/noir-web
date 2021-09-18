@@ -74,6 +74,7 @@ function App() {
   useKeypress('k', ifNoPanel(moveOnClick('backward')))
   useKeypress('g', ifNoPanel(moveOnClick('first')))
   useKeypress('G', ifNoPanel(moveOnClick('last')))
+  useKeypress('Escape', _ => setShowPanel(false))
 
   useEffect(() => {
     setSearchResult(null)
