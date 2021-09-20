@@ -47,6 +47,7 @@ function App() {
     showHistory,
     showPanel,
     showPath,
+    showPosition,
     shuffle,
     updateInterval,
   } = useConfigPanel(expressionHistory.items)
@@ -213,7 +214,7 @@ function App() {
       { showClock && <Clock /> }
       { showPath && selectedImage && <ImagePath pathPrefix={pathPrefix} image={selectedImage} /> }
 
-      { (imageHistory.position !== null) &&
+      { showPosition && (imageHistory.position !== null) &&
           <Position current={ imageHistory.position + 1 } last={imageHistory.length} /> }
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>

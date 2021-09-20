@@ -38,6 +38,7 @@ export default function useConfigPanel(history: SearchHistory[]) {
   const [showHistory, setShowHistory] = useState<boolean>(false)
   const [showPanel, setShowPanel] = useState<boolean>(false)
   const [showPath, setShowPath] = useLocalStorage<boolean>('show-path', false)
+  const [showPosition, setShowPosition] = useLocalStorage<boolean>('show-position', false)
   const [shuffle, setShuffle] = useLocalStorage<boolean>('shuffle', true)
   const [tags, setTags] = useState<string[]>([])
   const [updateInterval, setUpdateInterval] = useLocalStorage<number | null>('update-interval', 60)
@@ -136,6 +137,7 @@ export default function useConfigPanel(history: SearchHistory[]) {
       <div className="flex flex-row items-center m-1 p-1">
         <CheckBox caption="Path" value={showPath} setter={setShowPath} />
         <CheckBox caption="Clock" value={showClock} setter={setShowClock} />
+        <CheckBox caption="Position" value={showPosition} setter={setShowPosition} />
         <CheckBox caption="Shuffle" value={shuffle} setter={setShuffle} />
         <input
           type="button"
@@ -156,6 +158,7 @@ export default function useConfigPanel(history: SearchHistory[]) {
     showHistory,
     showPanel,
     showPath,
+    showPosition,
     shuffle,
     updateInterval,
   }
