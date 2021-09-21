@@ -21,7 +21,6 @@ import useExpressionHistory from './use-expression-history'
 import useImageHistory from './use-image-history'
 import useInterval from './use-interval'
 import { NoirImage, imageUrl } from './image'
-import { NoirSearchResult } from './search_result'
 import { search, SearchHistory } from './api'
 
 
@@ -30,10 +29,11 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string|null>(null)
   const [loadingTries, setLoadingTryles] = useState<number>(0)
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
-  const [searchResult, setSearchResult] = useState<null|NoirSearchResult>(null)
+  const [images, setImages] = useState<null|NoirImage[]>(null)
+  const [originalImages, setOriginalImages] = useState<null|NoirImage[]>(null)
   const [searching, setSearching] = useState<boolean>(false)
   const [firstSearch, setFirstSearch] = useState<boolean>(true)
-  const imageHistory = useImageHistory(searchResult && searchResult.items)
+  const imageHistory = useImageHistory(images)
 
   const expressionHistory = useExpressionHistory()
 
@@ -53,7 +53,7 @@ function App() {
   } = useConfigPanel(expressionHistory.items)
 
   useInterval(
-    (showPanel || !searchResult || !autoNext) ? null : updateInterval,
+    (showPanel || !images || !autoNext) ? null : updateInterval,
     () => imageHistory.forward()
   )
 
@@ -64,7 +64,6 @@ function App() {
     className: "z-0"
   })
 
-  const selectedImage: NoirImage | null = imageHistory.currentImage
   const ifNoPanel = (f: (...args: any) => void) => (showPanel ? () => void 0 : f)
 
   useKeypress('j', ifNoPanel(moveOnClick('forward')))
@@ -74,18 +73,19 @@ function App() {
   useKeypress('Escape', () => setShowPanel(it => !it))
 
   useEffect(() => {
-    setSearchResult(null)
+    setImages(null)
     setSearching(true)
     setShowPanel(false)
     setErrorMessage(null)
     setFirstSearch(false)
 
     search(searchExpression, !firstSearch).then((result) => {
+      setOriginalImages(Array.from(result.items))
       if (shuffle)
         result.items = arrayShuffle(result.items)
       const prefix = commonPathPrefix(result.items.map(it => it.file.path).slice(0, 100))
       const prefixPattern = new RegExp('^' + escapeStringRegexp(prefix))
-      setSearchResult(result)
+      setImages(result.items)
       setPathPrefix(prefixPattern)
       setSearching(false)
       expressionHistory.refresh()
@@ -97,11 +97,19 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchExpression])
 
+
   useEffect(() => {
-    if (selectedImage)
-      setUrl(imageUrl(selectedImage))
-  }, [selectedImage, setUrl])
+    if (imageHistory?.currentImage) {
+      setUrl(imageUrl(imageHistory?.currentImage))
+    }
+  }, [imageHistory, imageHistory.currentImage, setUrl])
   // }}}
+
+  useEffect(() => {
+    if (!originalImages)
+      return
+    setImages(shuffle ? arrayShuffle(originalImages) : originalImages)
+  }, [shuffle, setUrl])
 
   // Event Handlers {{{
   function imageOnLoad(_: any) {
@@ -111,7 +119,7 @@ function App() {
   function imageOnError(_: any) {
     if (100 < loadingTries)
       return
-    if (!searchResult)
+    if (!images)
       return
     console.log('retry to load', {tries: loadingTries})
     setLoadingTryles(loadingTries + 1)
@@ -162,8 +170,8 @@ function App() {
     if (errorMessage)
       return (<ErrorMessage>{errorMessage}</ErrorMessage>)
 
-    if (selectedImage)
-      return (<Image image={selectedImage}/>)
+    if (imageHistory?.currentImage)
+      return (<Image image={imageHistory?.currentImage}/>)
 
     return (<ErrorMessage>No Image</ErrorMessage>)
   }
@@ -196,7 +204,7 @@ function App() {
       return (
         <>
           { ConfigPanel }
-          { selectedImage && searchResult && <ImageMeta image={selectedImage} images={searchResult.items.length} /> }
+          { imageHistory?.currentImage && images && <ImageMeta image={imageHistory.currentImage} images={images.length} /> }
         </>
       )
     return (<></>)
@@ -212,7 +220,7 @@ function App() {
       <EdgeButton visible={!showPanel} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick('forward'))}/>
 
       { showClock && <Clock /> }
-      { showPath && selectedImage && <ImagePath pathPrefix={pathPrefix} image={selectedImage} /> }
+      { showPath && imageHistory?.currentImage && <ImagePath pathPrefix={pathPrefix} image={imageHistory.currentImage} /> }
 
       { showPosition && (imageHistory.position !== null) &&
           <Position current={ imageHistory.position + 1 } last={imageHistory.length} /> }
