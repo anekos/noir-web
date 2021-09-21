@@ -109,6 +109,7 @@ function App() {
     if (!originalImages)
       return
     setImages(shuffle ? arrayShuffle(originalImages) : originalImages)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shuffle, setUrl])
 
   // Event Handlers {{{
