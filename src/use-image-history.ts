@@ -54,6 +54,11 @@ export default function useImageHistory(images: NoirImage[] | null) {
         return
       setPosition(images.length - 1)
     },
+    random () {
+      if (position === null || images === null || images.length <= 0)
+        return
+      setPosition(Math.floor(Math.random() * images.length))
+    },
     reset () {
       if (images && 0 < images.length)
         setPosition(0)

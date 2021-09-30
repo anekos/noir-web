@@ -7,7 +7,7 @@ import commonPathPrefix from 'common-path-prefix'
 import escapeStringRegexp from 'escape-string-regexp'
 import useKeypress from 'react-use-keypress'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faRandom, faStepBackward, faStepForward, faSpinner } from '@fortawesome/free-solid-svg-icons'
 
 import Clock from './ui/Clock'
 import EdgeButton from './ui/EdgeButton'
@@ -212,13 +212,19 @@ function App() {
   }
   // }}}
 
-  // <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12" />
   // <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12 inset-x-0 bottom-0" />
 
   return (
     <div className="App" onWheel={onWheel}>
-      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick('backward'))} />
-      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick('forward'))}/>
+      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick('backward'))}>
+        <FontAwesomeIcon icon={faStepBackward} size="2x" />
+      </EdgeButton>
+      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick('forward'))}>
+        <FontAwesomeIcon icon={faStepForward} size="2x" />
+      </EdgeButton>
+      <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12" onClick={ifNoPanel(moveOnClick('random'))}>
+        <FontAwesomeIcon icon={faRandom} size="2x" />
+      </EdgeButton>
 
       { showClock && <Clock /> }
       { showPath && imageHistory?.currentImage && <ImagePath pathPrefix={pathPrefix} image={imageHistory.currentImage} /> }
