@@ -33,6 +33,7 @@ function sortIgnoreCase(lst: string[]): string[] {
 export default function useConfigPanel(history: SearchHistory[]) {
   const [aliases, setAliases] = useState<string[]>([])
   const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
+  const [random, setRandom] = useLocalStorage<boolean>('random', false)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
   const [showHistory, setShowHistory] = useState<boolean>(false)
@@ -131,8 +132,10 @@ export default function useConfigPanel(history: SearchHistory[]) {
           placeholder="Interval"
           defaultValue={updateInterval}
           onBlur={intervalOnChange}
+          className="mr-2"
           min={1}
         />
+        <CheckBox caption="Random" value={random} setter={setRandom} />
       </div>
       <div className="flex flex-row items-center m-1 p-1">
         <CheckBox caption="Path" value={showPath} setter={setShowPath} />
@@ -151,6 +154,7 @@ export default function useConfigPanel(history: SearchHistory[]) {
   return {
     ConfigPanel,
     autoNext,
+    random,
     searchExpression,
     setSearchExpression,
     setShowPanel,

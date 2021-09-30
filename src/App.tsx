@@ -40,6 +40,7 @@ function App() {
   const {
     ConfigPanel,
     autoNext,
+    random,
     searchExpression,
     setSearchExpression,
     setShowPanel,
@@ -54,7 +55,7 @@ function App() {
 
   useInterval(
     (showPanel || !images || !autoNext) ? null : updateInterval,
-    () => imageHistory.forward()
+    () => imageHistory[random ? 'random' : 'forward']()
   )
 
   const {Img, setUrl} = useBufferedImage({
