@@ -3,14 +3,19 @@ import {useEffect, useState} from 'react'
 import { NoirImage } from './image'
 
 
-export default function useImageHistory(images: NoirImage[] | null) {
+export default function useImageHistory(images: NoirImage[] | null, random: boolean) {
   const [position, setPosition] = useState<number|null>(null)
 
   useEffect(() => {
-    if (!images || images.length === 0)
+    if (!images || images.length === 0) {
       setPosition(null)
+      return
+    }
+    if (random)
+      setPosition(Math.floor(Math.random() * images.length))
     else
       setPosition(0)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images])
 
   return {

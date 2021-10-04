@@ -33,8 +33,6 @@ function App() {
   const [originalImages, setOriginalImages] = useState<null|NoirImage[]>(null)
   const [searching, setSearching] = useState<boolean>(false)
   const [firstSearch, setFirstSearch] = useState<boolean>(true)
-  const imageHistory = useImageHistory(images)
-
   const expressionHistory = useExpressionHistory()
 
   const {
@@ -52,6 +50,8 @@ function App() {
     shuffle,
     updateInterval,
   } = useConfigPanel(expressionHistory.items)
+
+  const imageHistory = useImageHistory(images, random)
 
   useInterval(
     (showPanel || !images || !autoNext) ? null : updateInterval,
