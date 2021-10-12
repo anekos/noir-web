@@ -1,12 +1,12 @@
 interface ICheckBox {
   caption: string
   value: boolean
-  setter: (x: (y: boolean) => boolean) => void
+  setter: (x: boolean) => void
 }
 export default function CheckBox({caption, value, setter}: ICheckBox) {
-  function onClickToggle(setter: (x: (y: boolean) => boolean) => void) {
+  function onClickToggle(setter: (x: boolean) => void) {
     return function () {
-      setter(it => !it)
+      setter(!value)
     }
   }
 

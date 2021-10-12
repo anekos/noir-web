@@ -1,40 +1,23 @@
 import React, {useState, useEffect} from 'react'
 
-import TextInput from 'react-autocomplete-input'
 import classNames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { InputNumber } from "@supabase/ui"
 import { faList } from '@fortawesome/free-solid-svg-icons'
 
 import CheckBox from './CheckBox'
+import ExpressionEditor from './ExpressionEditor'
 import { SearchHistory } from '../api'
-import { getAliases, getTags } from '../api'
 import { useLocalStorage } from '../use-local-storage'
 
 
-export enum Page { History = 1, Search }
+export enum Page { History = 1, Search, Alias }
 
 
 const DefaultExpression = "path like '%wallpaper%'"
 
 
-function sortIgnoreCase(lst: string[]): string[] {
-  function cmp(a: string, b: string): number {
-    const ua = a.toUpperCase()
-    const ub = b.toUpperCase()
-    if (ua < ub)
-      return -1
-    if (ua > ub)
-      return 1
-    return 0
-  }
-
-  return Array.from(lst).sort(cmp)
-}
-
-
 export function useConfigPanel(history: SearchHistory[]) {
-  const [aliases, setAliases] = useState<string[]>([])
   const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
   const [page, setPage] = useState<Page | null>(Page.Search)
   const [random, setRandom] = useLocalStorage<boolean>('random', false)
@@ -43,7 +26,6 @@ export function useConfigPanel(history: SearchHistory[]) {
   const [showPath, setShowPath] = useLocalStorage<boolean>('show-path', false)
   const [showPosition, setShowPosition] = useLocalStorage<boolean>('show-position', false)
   const [shuffle, setShuffle] = useLocalStorage<boolean>('shuffle', true)
-  const [tags, setTags] = useState<string[]>([])
   const [updateInterval, setUpdateInterval] = useLocalStorage<number | null>('update-interval', 60)
 
   const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
@@ -77,33 +59,16 @@ export function useConfigPanel(history: SearchHistory[]) {
       setUpdateInterval(newValue)
   }
 
-  useEffect(() => { getAliases().then(sortIgnoreCase).then(setAliases) }, [])
-  useEffect(() => { getTags().then(sortIgnoreCase).then(setTags) }, [])
-
   useEffect(() => {
     setExpressionBuffer(searchExpression)
   }, [searchExpression])
 
-  function changeOnSelect(trigger, suffix) {
-    if (trigger === '@' || trigger === '!')
-      return suffix
-    return trigger + suffix
-  }
-
-  const expressionChanged = expressionBuffer !== searchExpression
-  const expressions = history.map(it => it.expression)
+  const expressionChanged = searchExpression !== expressionBuffer
 
   const ConfigPanel = (
     <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
       <div className="flex flex-row items-center w-full m-1 p-1">
-        <TextInput
-          options={{'@': aliases, '#': tags, '!': expressions}}
-          trigger={['@', '#', '!']}
-          changeOnSelect={changeOnSelect}
-          onChange={setExpressionBuffer}
-          value={expressionBuffer}
-          maxOptions={20}
-          className="rounded-md block mx-2 font-bold flex-1 h-8 p-2 w-96 h-20" />
+        <ExpressionEditor expression={expressionBuffer} setExpression={setExpressionBuffer} />
         <input
           type="button"
           id="search-button"
@@ -141,9 +106,14 @@ export function useConfigPanel(history: SearchHistory[]) {
         <CheckBox caption="Shuffle" value={shuffle} setter={setShuffle} />
         <input
           type="button"
-          className="rounded-md p-2 bg-green-500 text-white font-bold"
+          className="rounded-md p-2 mr-2 bg-green-500 text-white font-bold"
           onClick={fullscreenOnClick}
           value="Fullscreen" />
+        <input
+          type="button"
+          className="rounded-md p-2 bg-green-500 text-white font-bold"
+          onClick={_ => setPage(Page.Alias)}
+          value="Alias" />
       </div>
     </div>
   )

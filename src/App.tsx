@@ -7,13 +7,16 @@ import commonPathPrefix from 'common-path-prefix'
 import escapeStringRegexp from 'escape-string-regexp'
 import useKeypress from 'react-use-keypress'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRandom, faStepBackward, faStepForward, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faRandom, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons'
 
+import AliasEditor from './ui/AliasEditor'
 import Clock from './ui/Clock'
 import EdgeButton from './ui/EdgeButton'
 import ErrorMessage from './ui/ErrorMessage'
 import ImageMeta from './ui/ImageMeta'
 import ImagePath from './ui/ImagePath'
+import Loading from './ui/Loading'
+import PanelFrame from './ui/PanelFrame'
 import Position from './ui/Position'
 import useBufferedImage from './ui/use-buffered-image'
 import useExpressionHistory from './use-expression-history'
@@ -166,7 +169,7 @@ function App() {
 
   function Content() {
     if (searching)
-      return (<FontAwesomeIcon className="text-white" icon={faSpinner} size="6x" spin />)
+      return (<Loading />)
 
     if (errorMessage)
       return (<ErrorMessage>{errorMessage}</ErrorMessage>)
@@ -179,28 +182,28 @@ function App() {
 
   function HistoryPanel() {
     return (
-      <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
-        <div className="flex flex-row items-center w-full p-2">
-          <ul className="list-inside list-decimal">
-            { expressionHistory.items.map((history: SearchHistory, index: number) => {
-              return (
-                <li
-                  key={index}
-                  className="bg-green-500 rounded-md p-1 m-1 text-white cursor-pointer"
-                  onClick={historyOnClick(history.expression)} >
-                  {history.expression} <span className="text-gray-500">({history.uses})</span>
-                </li>
-              )
-            }) }
-          </ul>
-        </div>
-      </div>
+      <PanelFrame>
+        <ul className="list-inside list-decimal">
+          { expressionHistory.items.map((history: SearchHistory, index: number) => {
+            return (
+              <li
+                key={index}
+                className="bg-green-500 rounded-md p-1 m-1 text-white cursor-pointer"
+                onClick={historyOnClick(history.expression)} >
+                {history.expression} <span className="text-gray-500">({history.uses})</span>
+              </li>
+            )
+          }) }
+        </ul>
+      </PanelFrame>
     )
   }
 
   const Panel = () => {
     if (page === Page.History)
       return (<HistoryPanel />)
+    if (page === Page.Alias)
+      return (<AliasEditor />)
     if (page)
       return (
         <>
