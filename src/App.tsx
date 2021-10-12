@@ -16,12 +16,12 @@ import ImageMeta from './ui/ImageMeta'
 import ImagePath from './ui/ImagePath'
 import Position from './ui/Position'
 import useBufferedImage from './ui/use-buffered-image'
-import useConfigPanel from './ui/use-config-panel'
 import useExpressionHistory from './use-expression-history'
 import useImageHistory from './use-image-history'
 import useInterval from './use-interval'
 import { NoirImage, imageUrl } from './image'
 import { search, SearchHistory } from './api'
+import { useConfigPanel, Page } from './ui/use-config-panel'
 
 
 function App() {
@@ -38,13 +38,12 @@ function App() {
   const {
     ConfigPanel,
     autoNext,
+    page,
     random,
     searchExpression,
+    setPage,
     setSearchExpression,
-    setShowPanel,
     showClock,
-    showHistory,
-    showPanel,
     showPath,
     showPosition,
     shuffle,
@@ -54,7 +53,7 @@ function App() {
   const imageHistory = useImageHistory(images, random)
 
   useInterval(
-    (showPanel || !images || !autoNext) ? null : updateInterval,
+    (page || !images || !autoNext) ? null : updateInterval,
     () => imageHistory[random ? 'random' : 'forward']()
   )
 
@@ -65,18 +64,18 @@ function App() {
     className: "z-0"
   })
 
-  const ifNoPanel = (f: (...args: any) => void) => (showPanel ? () => void 0 : f)
+  const ifNoPanel = (f: (...args: any) => void) => (page ? () => void 0 : f)
 
   useKeypress('j', ifNoPanel(moveOnClick('forward')))
   useKeypress('k', ifNoPanel(moveOnClick('backward')))
   useKeypress('g', ifNoPanel(moveOnClick('first')))
   useKeypress('G', ifNoPanel(moveOnClick('last')))
-  useKeypress('Escape', () => setShowPanel(it => !it))
+  useKeypress('Escape', () => setPage(null))
 
   useEffect(() => {
     setImages(null)
     setSearching(true)
-    setShowPanel(false)
+    setPage(null)
     setErrorMessage(null)
     setFirstSearch(false)
 
@@ -130,7 +129,7 @@ function App() {
 
   function showPanelOnClick(e: React.MouseEvent<HTMLElement>) {
     e.stopPropagation()
-    setShowPanel((it: boolean) => !it)
+    setPage(page ? null : Page.Search)
   }
 
   function moveOnClick(method: string) {
@@ -142,12 +141,12 @@ function App() {
   function historyOnClick(expression: string) {
     return () => {
       setSearchExpression(expression)
-      setShowPanel(false)
+      setPage(Page.Search)
     }
   }
 
   function onWheel(e: React.WheelEvent<HTMLDivElement>) {
-    if (showPanel)
+    if (page)
       return
     if (0 < e.deltaY) {
       moveOnClick('forward')()
@@ -200,9 +199,9 @@ function App() {
   }
 
   const Panel = () => {
-    if (showHistory)
+    if (page === Page.History)
       return (<HistoryPanel />)
-    if (showPanel)
+    if (page)
       return (
         <>
           { ConfigPanel }
@@ -213,17 +212,17 @@ function App() {
   }
   // }}}
 
-  // <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12 inset-x-0 bottom-0" />
+  // <EdgeButton visible={!page} className="mx-1 w-screen h-12 inset-x-0 bottom-0" />
 
   return (
     <div className="App" onWheel={onWheel}>
-      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick('backward'))}>
+      <EdgeButton visible={!page} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick('backward'))}>
         <FontAwesomeIcon icon={faStepBackward} size="2x" />
       </EdgeButton>
-      <EdgeButton visible={!showPanel} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick('forward'))}>
+      <EdgeButton visible={!page} className="my-1 h-screen w-12 inset-y-0 right-0" onClick={ifNoPanel(moveOnClick('forward'))}>
         <FontAwesomeIcon icon={faStepForward} size="2x" />
       </EdgeButton>
-      <EdgeButton visible={!showPanel} className="mx-1 w-screen h-12" onClick={ifNoPanel(moveOnClick('random'))}>
+      <EdgeButton visible={!page} className="mx-1 w-screen h-12" onClick={ifNoPanel(moveOnClick('random'))}>
         <FontAwesomeIcon icon={faRandom} size="2x" />
       </EdgeButton>
 

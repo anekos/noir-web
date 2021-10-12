@@ -12,6 +12,9 @@ import { getAliases, getTags } from '../api'
 import { useLocalStorage } from '../use-local-storage'
 
 
+export enum Page { History = 1, Search }
+
+
 const DefaultExpression = "path like '%wallpaper%'"
 
 
@@ -30,14 +33,13 @@ function sortIgnoreCase(lst: string[]): string[] {
 }
 
 
-export default function useConfigPanel(history: SearchHistory[]) {
+export function useConfigPanel(history: SearchHistory[]) {
   const [aliases, setAliases] = useState<string[]>([])
   const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
+  const [page, setPage] = useState<Page | null>(Page.Search)
   const [random, setRandom] = useLocalStorage<boolean>('random', false)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
-  const [showHistory, setShowHistory] = useState<boolean>(false)
-  const [showPanel, setShowPanel] = useState<boolean>(false)
   const [showPath, setShowPath] = useLocalStorage<boolean>('show-path', false)
   const [showPosition, setShowPosition] = useLocalStorage<boolean>('show-position', false)
   const [shuffle, setShuffle] = useLocalStorage<boolean>('shuffle', true)
@@ -58,11 +60,11 @@ export default function useConfigPanel(history: SearchHistory[]) {
       if (document.exitFullscreen)
         document.exitFullscreen()
     }
-    setShowPanel(false)
+    setPage(null)
   }
 
   function showHistoryOnClick() {
-    setShowHistory(true)
+    setPage(Page.History)
   }
 
   function intervalOnChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -77,11 +79,6 @@ export default function useConfigPanel(history: SearchHistory[]) {
 
   useEffect(() => { getAliases().then(sortIgnoreCase).then(setAliases) }, [])
   useEffect(() => { getTags().then(sortIgnoreCase).then(setTags) }, [])
-
-  useEffect(() => {
-    if (!showPanel)
-      setShowHistory(false)
-  }, [showPanel])
 
   useEffect(() => {
     setExpressionBuffer(searchExpression)
@@ -154,13 +151,12 @@ export default function useConfigPanel(history: SearchHistory[]) {
   return {
     ConfigPanel,
     autoNext,
+    page,
     random,
     searchExpression,
+    setPage,
     setSearchExpression,
-    setShowPanel,
     showClock,
-    showHistory,
-    showPanel,
     showPath,
     showPosition,
     shuffle,
