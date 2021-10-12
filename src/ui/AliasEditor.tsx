@@ -4,7 +4,7 @@ import CheckBox from './CheckBox'
 import ExpressionEditor from './ExpressionEditor'
 import Loading from './Loading'
 import PanelFrame from './PanelFrame'
-import { Alias, getAlias, getAliases, updateAlias } from '../api'
+import { Alias, deleteAlias, getAlias, getAliases, updateAlias } from '../api'
 
 
 interface IAliasList {
@@ -32,8 +32,9 @@ interface IEditor {
   name: string
   onUpdate: (alias: Alias) => void
   onCancel: () => void
+  onDelete: () => void
 }
-function Editor({name, onCancel, onUpdate}: IEditor) {
+function Editor({name, onCancel, onDelete, onUpdate}: IEditor) {
   const [alias, setAlias] = useState<Alias | null>(null)
 
   useEffect(() => {
@@ -53,8 +54,13 @@ function Editor({name, onCancel, onUpdate}: IEditor) {
     setAlias(Object.assign({}, alias, {recursive}))
   }
 
+  async function deleteIt() {
+    await deleteAlias(name)
+    onDelete()
+  }
+
   async function update(alias: Alias) {
-    const result = await updateAlias(name, alias)
+    await updateAlias(name, alias)
     onUpdate(alias)
   }
 
@@ -73,6 +79,11 @@ function Editor({name, onCancel, onUpdate}: IEditor) {
             className='rounded-md p-2 bg-green-500 font-bold mx-2 text-white cursor-pointer'
             onClick={_ => update(alias)}
             value="Update" />
+          <input
+            type="button"
+            className='rounded-md p-2 bg-green-500 font-bold mx-2 text-white cursor-pointer'
+            onClick={_ => deleteIt()}
+            value="Delete" />
           <input
             type="button"
             className='rounded-md p-2 bg-green-500 font-bold mx-2 text-white cursor-pointer'
@@ -98,17 +109,13 @@ export default function AliasEditor() {
     updateAliases()
   }, [])
 
-  function onUpdate(alias: Alias) {
+  function onUpdate() {
     setEditing(null)
     updateAliases()
   }
 
-  function onCancel() {
-    setEditing(null)
-  }
-
   if (editing)
-    return (<Editor name={editing} onUpdate={onUpdate} onCancel={onCancel} />)
+    return (<Editor name={editing} onUpdate={onUpdate} onCancel={() => setEditing(null)} onDelete={onUpdate} />)
 
   return (
     <PanelFrame>

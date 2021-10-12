@@ -11,6 +11,12 @@ export interface SearchHistory {
   uses: number
 }
 
+export async function deleteAlias(name: string): Promise<boolean | null> {
+  return fetch(`${ApiEndPoint}/alias/${encodeURIComponent(name)}`, {
+    method: 'DELETE',
+  }).then(it => it.json());
+}
+
 export async function getAlias(name: string): Promise<Alias | null> {
   return fetch(`${ApiEndPoint}/alias/${encodeURIComponent(name)}`, {
     method: 'GET',
