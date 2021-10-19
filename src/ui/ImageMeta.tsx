@@ -1,3 +1,5 @@
+import YAML from 'yaml'
+
 import { NoirImage } from '../image'
 
 
@@ -18,7 +20,8 @@ export default function ImageMeta({image, images}: IImageMeta) {
       <textarea
         className="w-full bg-gray-300"
         rows={12}
-        defaultValue={JSON.stringify(image, null, '  ')} />
+        wrap="off"
+        defaultValue={YAML.stringify(image, {indent: 2})} />
     </div>
   )
 }
