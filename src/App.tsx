@@ -78,7 +78,6 @@ function App() {
   useEffect(() => {
     setImages(null)
     setSearching(true)
-    setPage(null)
     setErrorMessage(null)
     setFirstSearch(false)
 
