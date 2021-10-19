@@ -123,7 +123,15 @@ export default function AliasEditor({onSearch}: IAliasEditor) {
   }
 
   if (editing)
-    return (<Editor name={editing} onUpdate={onUpdate} onCancel={() => setEditing(null)} onDelete={onUpdate} />)
+    return (
+      <Editor
+        name={editing}
+        onUpdate={onUpdate}
+        onCancel={() => setEditing(null)}
+        onDelete={onUpdate}
+        onSearch={onSearch}
+      />
+    )
 
   return (
     <PanelFrame>

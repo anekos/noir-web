@@ -31,6 +31,7 @@ export function useConfigPanel(history: SearchHistory[]) {
   const [expressionBuffer, setExpressionBuffer] = useState(searchExpression)
 
   function changeExpression(expression: string) {
+    setPage(null)
     setSearchExpression(expression)
     setExpressionBuffer(expression)
   }
