@@ -156,6 +156,10 @@ function App() {
       moveOnClick('backward')()
     }
   }
+
+  function onSearch(expression: string) {
+    setSearchExpression(expression)
+  }
   // }}}
 
   // Component {{{
@@ -202,7 +206,7 @@ function App() {
     if (page === Page.History)
       return (<HistoryPanel />)
     if (page === Page.Alias)
-      return (<AliasEditor />)
+      return (<AliasEditor onSearch={onSearch} />)
     if (page)
       return (
         <>

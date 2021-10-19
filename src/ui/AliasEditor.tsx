@@ -31,10 +31,11 @@ function AliasList({aliases, onClick}: IAliasList) {
 interface IEditor {
   name: string
   onUpdate: (alias: Alias) => void
+  onSearch: (expression: string) => void
   onCancel: () => void
   onDelete: () => void
 }
-function Editor({name, onCancel, onDelete, onUpdate}: IEditor) {
+function Editor({name, onCancel, onDelete, onUpdate, onSearch}: IEditor) {
   const [alias, setAlias] = useState<Alias | null>(null)
 
   useEffect(() => {
@@ -89,14 +90,21 @@ function Editor({name, onCancel, onDelete, onUpdate}: IEditor) {
             className='rounded-md p-2 bg-green-500 font-bold mx-2 text-white cursor-pointer'
             onClick={_ => onCancel()}
             value="Cancel" />
+          <input
+            type="button"
+            className='rounded-md p-2 bg-green-500 font-bold mx-2 text-white cursor-pointer'
+            onClick={_ => onSearch(alias.expression)}
+            value="Search" />
         </div>
       </div>
     </PanelFrame>
   )
 }
 
-
-export default function AliasEditor() {
+interface IAliasEditor {
+  onSearch: (expression: string) => void
+}
+export default function AliasEditor({onSearch}: IAliasEditor) {
   const [aliases, setAliases] = useState<string[]>([])
   const [editing, setEditing] = useState<string | null>(null)
   const [newName, setNewName] = useState<string>('')
