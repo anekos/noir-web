@@ -85,7 +85,7 @@ function App() {
       setOriginalImages(Array.from(result.items))
       if (shuffle)
         result.items = arrayShuffle(result.items)
-      const prefix = commonPathPrefix(result.items.map(it => it.file.path).slice(0, 100))
+      const prefix = commonPathPrefix(result.items.map(it => it.file.path).slice(0, 10000))
       const prefixPattern = new RegExp('^' + escapeStringRegexp(prefix))
       setImages(result.items)
       setPathPrefix(prefixPattern)
