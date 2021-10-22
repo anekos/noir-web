@@ -41,6 +41,12 @@ export async function getTags(): Promise<string[]> {
   }).then(it => it.json());
 }
 
+export async function getFileTags(path: string): Promise<string[]> {
+  return fetch(`${ApiEndPoint}/file/tags?path=${encodeURIComponent(path)}`, {
+    method: 'GET',
+  }).then(it => it.json());
+}
+
 export async function search(expression: string, record: boolean): Promise<NoirSearchResult> {
   return fetch(`${ApiEndPoint}/search`, {
     method: 'POST',

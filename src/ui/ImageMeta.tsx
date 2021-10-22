@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react'
+
 import YAML from 'yaml'
 
 import { NoirImage } from '../image'
+import { getFileTags } from '../api'
 
 
 interface IImageMeta {
@@ -8,6 +11,15 @@ interface IImageMeta {
   images: number
 }
 export default function ImageMeta({image, images}: IImageMeta) {
+  const [tags, setTags] = useState<null | string[]>(null)
+
+  useEffect(() => {
+    setTags(null)
+    getFileTags(image.file.path).then(setTags)
+  }, [image.file.path])
+
+  const meta = Object.assign({}, image, tags ? {tags} : {})
+
   return (
     <div className="z-30 bg-gray-500 p-2 opacity-90 rounded-md flex flex-col items-center w-full mt-2">
       <div className="flex flex-row items-center mb-1">
@@ -17,11 +29,13 @@ export default function ImageMeta({image, images}: IImageMeta) {
           </div>
         </div>
       </div>
+
       <textarea
         className="w-full bg-gray-300"
         rows={12}
         wrap="off"
-        defaultValue={YAML.stringify(image, {indent: 2})} />
+        readOnly={true}
+        value={YAML.stringify(meta, {indent: 2})} />
     </div>
   )
 }
