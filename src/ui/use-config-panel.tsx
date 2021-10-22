@@ -70,7 +70,11 @@ export function useConfigPanel(history: SearchHistory[]) {
   const ConfigPanel = (
     <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
       <div className="flex flex-row items-center w-full m-1 p-1">
-        <ExpressionEditor expression={expressionBuffer} setExpression={setExpressionBuffer} />
+        <ExpressionEditor
+          expression={expressionBuffer}
+          setExpression={setExpressionBuffer}
+          onSubmit={() => changeExpression(expressionBuffer)}
+        />
         <input
           type="button"
           id="search-button"

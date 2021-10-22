@@ -22,8 +22,9 @@ function sortIgnoreCase(lst: string[]): string[] {
 interface IExpressionEditor {
   expression: string
   setExpression: (e: string) => void
+  onSubmit?: () => void
 }
-export default function ExpressionEditor({expression, setExpression}: IExpressionEditor) {
+export default function ExpressionEditor({expression, setExpression, onSubmit}: IExpressionEditor) {
   const [aliases, setAliases] = useState<string[]>([])
   const [history, setHistory] = useState<SearchHistory[]>([])
   const [tags, setTags] = useState<string[]>([])
@@ -40,6 +41,13 @@ export default function ExpressionEditor({expression, setExpression}: IExpressio
     return trigger + suffix
   }
 
+  function onKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      if (onSubmit)
+        onSubmit()
+    }
+  }
+
   return (
     <TextInput
       autoFocus={true}
@@ -49,6 +57,7 @@ export default function ExpressionEditor({expression, setExpression}: IExpressio
       onChange={setExpression}
       value={expression}
       maxOptions={20}
+      onKeyPress={onKeyPress}
       className="rounded-md block mx-2 font-bold flex-1 h-8 p-2 w-96 h-20" />
   )
 }
