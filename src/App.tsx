@@ -15,6 +15,7 @@ import EdgeButton from './ui/EdgeButton'
 import ErrorMessage from './ui/ErrorMessage'
 import ImageMeta from './ui/ImageMeta'
 import ImagePath from './ui/ImagePath'
+import ImageTags from './ui/ImageTags'
 import Loading from './ui/Loading'
 import PanelFrame from './ui/PanelFrame'
 import Position from './ui/Position'
@@ -49,6 +50,7 @@ function App() {
     showClock,
     showPath,
     showPosition,
+    showTags,
     shuffle,
     updateInterval,
   } = useConfigPanel(expressionHistory.items)
@@ -235,7 +237,11 @@ function App() {
       </EdgeButton>
 
       { showClock && <Clock /> }
-      { showPath && imageHistory?.currentImage && <ImagePath pathPrefix={pathPrefix} image={imageHistory.currentImage} /> }
+
+      <div className="absolute left-0 bottom-0 max-w-3/7 z-50">
+        { showTags && imageHistory?.currentImage && <ImageTags path={imageHistory.currentImage.file.path} onSearch={onSearch}/> }
+        { showPath && imageHistory?.currentImage && <ImagePath pathPrefix={pathPrefix} image={imageHistory.currentImage} /> }
+      </div>
 
       { showPosition && (imageHistory.position !== null) &&
           <Position current={ imageHistory.position + 1 } last={imageHistory.length} /> }

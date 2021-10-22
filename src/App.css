@@ -65,3 +65,9 @@ body {
         opacity: 0.0;
     }
 }
+
+.extend-on-hover:not(:hover) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
