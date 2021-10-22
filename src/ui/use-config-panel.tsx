@@ -19,7 +19,7 @@ const DefaultExpression = "path like '%wallpaper%'"
 
 export function useConfigPanel(history: SearchHistory[]) {
   const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
-  const [page, setPage] = useState<Page | null>(Page.Search)
+  const [page, setPage] = useState<Page | null>(null)
   const [random, setRandom] = useLocalStorage<boolean>('random', false)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
