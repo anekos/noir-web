@@ -42,6 +42,7 @@ export default function ExpressionEditor({expression, setExpression}: IExpressio
 
   return (
     <TextInput
+      autoFocus={true}
       options={{'@': aliases, '#': tags, '!': expressions}}
       trigger={['@', '#', '!']}
       changeOnSelect={changeOnSelect}
