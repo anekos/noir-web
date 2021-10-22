@@ -147,7 +147,7 @@ function App() {
   function historyOnClick(expression: string) {
     return () => {
       setSearchExpression(expression)
-      setPage(Page.Search)
+      setPage(null)
     }
   }
 
