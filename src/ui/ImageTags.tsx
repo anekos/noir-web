@@ -16,7 +16,7 @@ export default function ImageTags({path, onSearch}: ITags) {
     getFileTags(path).then(setTags)
   }, [path])
 
-  if (tags === null)
+  if (tags === null || tags.length === 0)
     return (<></>)
 
   return (
