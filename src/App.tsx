@@ -68,12 +68,14 @@ function App() {
   })
 
   const ifNoPanel = (f: (...args: any) => void) => (page ? () => void 0 : f)
+  const togglePanel = () => setTimeout(() => setPage(page === null ? Page.Search : null), 1)
 
   useKeypress('j', ifNoPanel(moveOnClick('forward')))
   useKeypress('k', ifNoPanel(moveOnClick('backward')))
   useKeypress('g', ifNoPanel(moveOnClick('first')))
   useKeypress('G', ifNoPanel(moveOnClick('last')))
-  useKeypress('Escape', () => setPage(null))
+  useKeypress('Escape', togglePanel)
+  useKeypress('s', ifNoPanel(togglePanel))
 
   useEffect(() => {
     setImages(null)
