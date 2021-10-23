@@ -78,6 +78,7 @@ function App() {
   useKeypress('G', ifNoPanel(moveOnClick('last')))
   useKeypress('Escape', togglePanel)
   useKeypress('s', ifNoPanel(togglePanel))
+  useKeypress('x', ifNoPanel(moveOnClick('random')))
 
   useEffect(() => {
     setImages(null)
