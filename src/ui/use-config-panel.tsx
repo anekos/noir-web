@@ -67,17 +67,6 @@ export function useConfigPanel(history: SearchHistory[]) {
 
   const expressionChanged = searchExpression !== expressionBuffer
 
-  function EE({className}) {
-    return (
-      <ExpressionEditor
-        expression={expressionBuffer}
-        setExpression={setExpressionBuffer}
-        onSubmit={() => changeExpression(expressionBuffer)}
-        className={className}
-      />
-    )
-  }
-
   function Submit() {
     return (
       <input
@@ -111,7 +100,12 @@ export function useConfigPanel(history: SearchHistory[]) {
 
       <div className="flex flex-col items-center w-full m-1 p-1 visible xl:hidden">
         <div className="p-3 w-screen">
-          <EE className="w-11/12" />
+          <ExpressionEditor
+            expression={expressionBuffer}
+            setExpression={setExpressionBuffer}
+            onSubmit={() => changeExpression(expressionBuffer)}
+            className="w-11/12"
+          />
         </div>
         <div className="flex flex-row">
           <Submit />
@@ -119,7 +113,12 @@ export function useConfigPanel(history: SearchHistory[]) {
         </div>
       </div>
       <div className="flex flex-row items-center w-full m-1 p-1 hidden xl:flex">
-        <EE className="w-96" />
+          <ExpressionEditor
+            expression={expressionBuffer}
+            setExpression={setExpressionBuffer}
+            onSubmit={() => changeExpression(expressionBuffer)}
+            className="w-96"
+          />
         <Submit />
         <History />
       </div>
