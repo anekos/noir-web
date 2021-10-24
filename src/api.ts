@@ -1,5 +1,7 @@
 import { ApiEndPoint } from './config'
 import { NoirSearchResult } from './search_result';
+import { AppError } from './error';
+
 
 export interface Alias {
   expression: string
@@ -47,14 +49,19 @@ export async function getFileTags(path: string): Promise<string[]> {
   }).then(it => it.json());
 }
 
-export async function search(expression: string, record: boolean): Promise<NoirSearchResult> {
+export async function search(expression: string, record: boolean): Promise<NoirSearchResult | AppError> {
   return fetch(`${ApiEndPoint}/search`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({expression, record}),
-  }).then(it => it.json());
+  }).then(it => {
+    if (it.ok)
+      return it.json()
+    const code = it.status
+    return it.text().then(message => ({error: {code, message}}))
+  });
 }
 
 export async function updateAlias(name: string, alias: Alias): Promise<Alias | null> {

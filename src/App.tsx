@@ -24,6 +24,7 @@ import useExpressionHistory from './use-expression-history'
 import useImageHistory from './use-image-history'
 import useInterval from './use-interval'
 import { NoirImage, imageUrl } from './image'
+import { isError } from './error'
 import { search, SearchHistory } from './api'
 import { useConfigPanel, Page } from './ui/use-config-panel'
 
@@ -87,6 +88,11 @@ function App() {
     setFirstSearch(false)
 
     search(searchExpression, !firstSearch).then((result) => {
+      setSearching(false)
+      if (isError(result)) {
+        setErrorMessage(result.error.message)
+        return
+      }
       setOriginalImages(Array.from(result.items))
       if (shuffle)
         result.items = arrayShuffle(result.items)
@@ -94,7 +100,6 @@ function App() {
       const prefixPattern = new RegExp('^' + escapeStringRegexp(prefix))
       setImages(result.items)
       setPathPrefix(prefixPattern)
-      setSearching(false)
       expressionHistory.refresh()
     }).catch(it => {
       setSearching(false)
