@@ -250,8 +250,6 @@ function App() {
         <FontAwesomeIcon icon={faRandom} size="2x" />
       </EdgeButton>
 
-      { showClock && <Clock /> }
-
       <div className="absolute left-0 bottom-0 z-50 hidden lg:block max-w-3/7">
         { showTags && imageHistory?.currentImage && <ImageTags path={imageHistory.currentImage.file.path} onSearch={onSearch}/> }
         { showPath && imageHistory?.currentImage && <ImagePath pathPrefix={pathPrefix} image={imageHistory.currentImage} /> }
@@ -259,6 +257,8 @@ function App() {
 
       { showPosition && (imageHistory.position !== null) &&
           <Position current={ imageHistory.position + 1 } last={imageHistory.length} /> }
+
+      { showClock && <Clock /> }
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
         <Content />
