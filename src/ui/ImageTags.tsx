@@ -20,7 +20,7 @@ export default function ImageTags({path, onSearch}: ITags) {
     return (<></>)
 
   return (
-      <Information className="extend-on-hover">
+    <Information className="extend-on-hover">
       { tags.map((tag, index) => (
           <span
             key={index}
