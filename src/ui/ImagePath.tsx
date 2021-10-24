@@ -8,7 +8,7 @@ interface IPath {
 }
 export default function ImagePath({pathPrefix, image}: IPath) {
   return (
-    <Information className="truncate">
+    <Information className="w-max">
       { image.file.path.replace(pathPrefix, '') }
     </Information>
   )
