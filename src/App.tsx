@@ -38,6 +38,7 @@ function App() {
   const [originalImages, setOriginalImages] = useState<null|NoirImage[]>(null)
   const [searching, setSearching] = useState<boolean>(false)
   const [firstSearch, setFirstSearch] = useState<boolean>(true)
+  const [doRecord, setDoRecord] = useState<boolean>(true)
   const expressionHistory = useExpressionHistory()
 
   const {
@@ -87,12 +88,17 @@ function App() {
     setErrorMessage(null)
     setFirstSearch(false)
 
-    search(searchExpression, !firstSearch).then((result) => {
+    const record = !firstSearch && doRecord
+
+    search(searchExpression, record).then((result) => {
+      setDoRecord(true)
       setSearching(false)
+
       if (isError(result)) {
         setErrorMessage(result.error.message)
         return
       }
+
       setOriginalImages(Array.from(result.items))
       if (shuffle)
         result.items = arrayShuffle(result.items)
@@ -102,6 +108,7 @@ function App() {
       setPathPrefix(prefixPattern)
       expressionHistory.refresh()
     }).catch(it => {
+      setDoRecord(true)
       setSearching(false)
       setErrorMessage(it.toString())
     })
@@ -168,6 +175,7 @@ function App() {
   }
 
   function onSearch(expression: string) {
+    setDoRecord(false)
     setSearchExpression(expression)
   }
   // }}}
