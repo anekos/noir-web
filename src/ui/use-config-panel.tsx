@@ -148,10 +148,10 @@ export function useConfigPanel(history: SearchHistory[]) {
           value="Alias" />
       </div>
       <div className="flex flex-row items-center m-1 p-1">
-        <CheckBox caption="Tags" value={showTags} setter={setShowTags} />
-        <CheckBox caption="Path" value={showPath} setter={setShowPath} />
+        <CheckBox caption="Tags" value={showTags} setter={setShowTags} className="hidden lg:block" />
+        <CheckBox caption="Path" value={showPath} setter={setShowPath} className="hidden lg:block"  />
         <CheckBox caption="Position" value={showPosition} setter={setShowPosition} />
-        <CheckBox caption="Clock" value={showClock} setter={setShowClock} />
+        <CheckBox caption="Clock" value={showClock} setter={setShowClock} className="hidden lg:block"  />
       </div>
     </div>
   )

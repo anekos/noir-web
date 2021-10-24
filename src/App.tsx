@@ -252,7 +252,7 @@ function App() {
 
       { showClock && <Clock /> }
 
-      <div className="absolute left-0 bottom-0 max-w-3/7 z-50">
+      <div className="absolute left-0 bottom-0 max-w-3/7 z-50 hidden lg:block">
         { showTags && imageHistory?.currentImage && <ImageTags path={imageHistory.currentImage.file.path} onSearch={onSearch}/> }
         { showPath && imageHistory?.currentImage && <ImagePath pathPrefix={pathPrefix} image={imageHistory.currentImage} /> }
       </div>

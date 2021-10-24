@@ -20,7 +20,7 @@ export default function Clock() {
   )
 
   return (
-    <Information className="absolute right-0 bottom-0 ">
+    <Information className="absolute right-0 bottom-0 hidden lg:block">
       { time }
     </Information>
   )
