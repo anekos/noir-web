@@ -21,7 +21,7 @@ export default function ImageMeta({image, images}: IImageMeta) {
   const meta = Object.assign({}, image, tags ? {tags} : {})
 
   return (
-    <div className="z-30 bg-gray-500 p-2 opacity-90 rounded-md flex flex-col items-center w-full mt-2">
+    <div className="z-30 bg-gray-500 p-2 opacity-90 rounded-md flex flex-col items-center w-full mt-2 hidden xl:flex">
       <div className="flex flex-row items-center mb-1">
         <div>
           <div className="font-bold text-white">
