@@ -106,10 +106,6 @@ export function useConfigPanel(history: SearchHistory[]) {
         <CheckBox caption="Random" value={random} setter={setRandom} />
       </div>
       <div className="flex flex-row items-center m-1 p-1">
-        <CheckBox caption="Path" value={showPath} setter={setShowPath} />
-        <CheckBox caption="Clock" value={showClock} setter={setShowClock} />
-        <CheckBox caption="Tags" value={showTags} setter={setShowTags} />
-        <CheckBox caption="Position" value={showPosition} setter={setShowPosition} />
         <CheckBox caption="Shuffle" value={shuffle} setter={setShuffle} />
         <input
           type="button"
@@ -121,6 +117,12 @@ export function useConfigPanel(history: SearchHistory[]) {
           className="rounded-md p-2 bg-green-500 text-white font-bold"
           onClick={_ => setPage(Page.Alias)}
           value="Alias" />
+      </div>
+      <div className="flex flex-row items-center m-1 p-1">
+        <CheckBox caption="Tags" value={showTags} setter={setShowTags} />
+        <CheckBox caption="Path" value={showPath} setter={setShowPath} />
+        <CheckBox caption="Position" value={showPosition} setter={setShowPosition} />
+        <CheckBox caption="Clock" value={showClock} setter={setShowClock} />
       </div>
     </div>
   )
