@@ -70,8 +70,10 @@ function Editor({name, onCancel, onDelete, onUpdate, onSearch}: IEditor) {
       <div className="flex flex-col items-center">
         <h1 className="text-white font-bold mb-2">{name}</h1>
         <div className="flex flex-row items-center">
-          <ExpressionEditor expression={alias.expression} setExpression={setExpression}
-          />
+          <ExpressionEditor
+            expression={alias.expression}
+            setExpression={setExpression}
+            className="w-full" />
           <CheckBox caption="Recursive" value={alias.recursive} setter={setRecursive} />
         </div>
         <div className="flex flex-row items-center mt-2">

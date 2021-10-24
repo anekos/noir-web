@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from 'react'
 
+import classNames from 'classnames'
+
 import TextInput from 'react-autocomplete-input'
 import { SearchHistory } from '../api'
 import { getAliases, getHistory, getTags } from '../api'
@@ -23,8 +25,9 @@ interface IExpressionEditor {
   expression: string
   setExpression: (e: string) => void
   onSubmit?: () => void
+  className: string
 }
-export default function ExpressionEditor({expression, setExpression, onSubmit}: IExpressionEditor) {
+export default function ExpressionEditor({expression, setExpression, onSubmit, className}: IExpressionEditor) {
   const [aliases, setAliases] = useState<string[]>([])
   const [history, setHistory] = useState<SearchHistory[]>([])
   const [tags, setTags] = useState<string[]>([])
@@ -58,6 +61,6 @@ export default function ExpressionEditor({expression, setExpression, onSubmit}: 
       value={expression}
       maxOptions={20}
       onKeyPress={onKeyPress}
-      className="rounded-md block mx-2 font-bold flex-1 h-8 p-2 w-96 h-20" />
+      className={classNames("rounded-md block mx-2 font-bold flex-1 h-8 p-2 h-20", className)} />
   )
 }
