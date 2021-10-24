@@ -131,6 +131,16 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shuffle, setUrl])
 
+  useEffect(() => {
+    imageHistory.candidatesForNext.forEach(it => {
+      // const img = document.createElement('img')
+      // img.style.visibility = 'hidden'
+      const img = new window.Image()
+      img.src = imageUrl(it)
+      // img.onload = () => console.log('loaded', it.file.path)
+    })
+  }, [imageHistory.candidatesForNext])
+
   // Event Handlers {{{
   function imageOnLoad(_: any) {
     setLoadingTryles(0)

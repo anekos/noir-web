@@ -34,6 +34,14 @@ export default function useImageHistory(images: NoirImage[] | null, random: bool
     get length(): number {
       return images ? images.length : 0
     },
+    get candidatesForNext(): NoirImage[] {
+      const result: NoirImage[] = []
+      if (images === null || position === null)
+        return result
+      if (images.length - 1 <= position)
+        result.push(images[position + 1])
+      return result
+    },
     backward() {
       if (position === null || images === null || position === 0)
         return
