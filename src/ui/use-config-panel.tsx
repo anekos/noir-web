@@ -69,18 +69,18 @@ export function useConfigPanel(history: SearchHistory[]) {
 
   function Submit() {
     return (
-      <input
-        type="button"
+      <button
         id="search-button"
         className={
           classNames(
             'rounded-md p-2 bg-green-500 font-bold mx-2',
-            [expressionChanged ? 'text-white' : 'text-gray-200 line-through'],
-            {'cursor-pointer': expressionChanged}
+            [expressionChanged ? 'text-white' : 'text-gray-200 line-through']
           )
         }
-        onClick={_ => changeExpression(expressionBuffer)}
-        value="Search" />
+        onClick={_ => expressionChanged && changeExpression(expressionBuffer)}
+      >
+        Search
+      </button>
     )
   }
 
@@ -136,16 +136,18 @@ export function useConfigPanel(history: SearchHistory[]) {
       </div>
       <div className="flex flex-row items-center m-1 p-1">
         <CheckBox caption="Shuffle" value={shuffle} setter={setShuffle} />
-        <input
-          type="button"
+        <button
           className="rounded-md p-2 mr-2 bg-green-500 text-white font-bold"
           onClick={fullscreenOnClick}
-          value="Fullscreen" />
-        <input
-          type="button"
+        >
+          Fullscreen
+        </button>
+        <button
           className="rounded-md p-2 bg-green-500 text-white font-bold"
           onClick={_ => setPage(Page.Alias)}
-          value="Alias" />
+        >
+          Alias
+        </button>
       </div>
       <div className="flex flex-row items-center m-1 p-1">
         <CheckBox caption="Tags" value={showTags} setter={setShowTags} className="hidden lg:block" />
