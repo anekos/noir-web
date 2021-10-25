@@ -3,7 +3,7 @@ import React, {useState} from 'react'
 import strftime from 'strftime'
 
 import Information from './Information'
-import useInterval from '../use-interval'
+import useInterval from '../hook/use-interval'
 
 
 function currentTime(): string {

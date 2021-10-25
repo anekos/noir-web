@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import TextInput from 'react-autocomplete-input'
 import { SearchHistory } from '../api'
 import { getAliases, getHistory, getTags } from '../api'
-import { useEffectIfMounted } from '../use-effect-if-mounted'
+import { useEffectIfMounted } from '../hook/use-effect-if-mounted'
 
 
 function sortIgnoreCase(lst: string[]): string[] {

@@ -8,7 +8,7 @@ import { faList } from '@fortawesome/free-solid-svg-icons'
 import CheckBox from './CheckBox'
 import ExpressionEditor from './ExpressionEditor'
 import { SearchHistory } from '../api'
-import { useLocalStorage } from '../use-local-storage'
+import { useLocalStorage } from '../hook/use-local-storage'
 
 
 export enum Page { History = 1, Search, Alias }

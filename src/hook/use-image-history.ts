@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 
-import { NoirImage } from './image'
+import { NoirImage } from '../image'
 
 
 export default function useImageHistory(images: NoirImage[] | null, random: boolean) {

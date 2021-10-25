@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 
-import { getHistory, SearchHistory } from './api'
+import { getHistory, SearchHistory } from '../api'
 
 
 export default function useExpressionHistory() {

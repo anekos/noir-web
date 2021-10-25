@@ -4,7 +4,7 @@ import YAML from 'yaml'
 
 import { NoirImage } from '../image'
 import { getFileTags } from '../api'
-import { useEffectIfMounted } from '../use-effect-if-mounted'
+import { useEffectIfMounted } from '../hook/use-effect-if-mounted'
 
 
 interface IImageMeta {
