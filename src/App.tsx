@@ -288,9 +288,9 @@ function App() {
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
         <Content />
         { (page === null) && (numbers !== null) &&
-            <Information className="">
+            <div className="m-2 rounded-md p-2 z-50 bg-blue-500 opacity-80 text-white">
               {numbers}
-            </Information>
+            </div>
         }
         <div className="z-40 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
           { Panel() }
