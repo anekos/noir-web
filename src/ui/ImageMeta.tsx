@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import YAML from 'yaml'
 
 import { NoirImage } from '../image'
 import { getFileTags } from '../api'
+import { useEffectIfMounted } from '../use-effect-if-mounted'
 
 
 interface IImageMeta {
@@ -13,9 +14,9 @@ interface IImageMeta {
 export default function ImageMeta({image, images}: IImageMeta) {
   const [tags, setTags] = useState<null | string[]>(null)
 
-  useEffect(() => {
+  useEffectIfMounted((ifMounted) => {
     setTags(null)
-    getFileTags(image.file.path).then(setTags)
+    getFileTags(image.file.path).then(ifMounted(setTags))
   }, [image.file.path])
 
   const meta = Object.assign({}, image, tags ? {tags} : {})

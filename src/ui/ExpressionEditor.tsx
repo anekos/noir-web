@@ -1,10 +1,11 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState } from 'react'
 
 import classNames from 'classnames'
 
 import TextInput from 'react-autocomplete-input'
 import { SearchHistory } from '../api'
 import { getAliases, getHistory, getTags } from '../api'
+import { useEffectIfMounted } from '../use-effect-if-mounted'
 
 
 function sortIgnoreCase(lst: string[]): string[] {
@@ -32,9 +33,9 @@ export default function ExpressionEditor({expression, setExpression, onSubmit, c
   const [history, setHistory] = useState<SearchHistory[]>([])
   const [tags, setTags] = useState<string[]>([])
 
-  useEffect(() => { getAliases().then(sortIgnoreCase).then(setAliases) }, [])
-  useEffect(() => { getTags().then(sortIgnoreCase).then(setTags) }, [])
-  useEffect(() => { getHistory().then(setHistory) }, [])
+  useEffectIfMounted((ifok) => { getAliases().then(sortIgnoreCase).then(ifok(setAliases)) }, [])
+  useEffectIfMounted((ifok) => { getTags().then(sortIgnoreCase).then(ifok(setTags)) }, [])
+  useEffectIfMounted((ifok) => { getHistory().then(ifok(setHistory)) }, [])
 
   const expressions = history.map(it => it.expression)
 

@@ -5,6 +5,7 @@ import ExpressionEditor from './ExpressionEditor'
 import Loading from './Loading'
 import PanelFrame from './PanelFrame'
 import { Alias, deleteAlias, getAlias, getAliases, updateAlias } from '../api'
+import { useEffectIfMounted } from '../use-effect-if-mounted'
 
 
 interface IAliasList {
@@ -38,9 +39,9 @@ interface IEditor {
 function Editor({name, onCancel, onDelete, onUpdate, onSearch}: IEditor) {
   const [alias, setAlias] = useState<Alias | null>(null)
 
-  useEffect(() => {
+  useEffectIfMounted((ifok) => {
     getAlias(name).then(alias => {
-      setAlias(alias ? alias : {expression: 'true', recursive: false})
+      ifok(setAlias)(alias ? alias : {expression: 'true', recursive: false})
     })
   }, [name])
 
