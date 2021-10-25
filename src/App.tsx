@@ -17,6 +17,7 @@ import ErrorMessage from './ui/ErrorMessage'
 import ImageMeta from './ui/ImageMeta'
 import ImagePath from './ui/ImagePath'
 import ImageTags from './ui/ImageTags'
+import Information from './ui/Information'
 import Loading from './ui/Loading'
 import PanelFrame from './ui/PanelFrame'
 import Position from './ui/Position'
@@ -42,6 +43,7 @@ function App() {
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
   const [searching, setSearching] = useState<boolean>(false)
   const [showCursor, setShowCursor] = useState<boolean>(true)
+  const [numbers, setNumbers] = useState<string | null>(null)
   const expressionHistory = useExpressionHistory()
 
   const {
@@ -81,9 +83,21 @@ function App() {
   useKeypress('k', ifNoPanel(moveOnClick('backward')))
   useKeypress('g', ifNoPanel(moveOnClick('first')))
   useKeypress('G', ifNoPanel(moveOnClick('last')))
-  useKeypress('Escape', togglePanel)
+  useKeypress('Escape', () => {
+    if (numbers === null)
+      togglePanel()
+    else
+      setNumbers(null)
+  })
   useKeypress('s', ifNoPanel(togglePanel))
   useKeypress('x', ifNoPanel(moveOnClick('random')))
+  for (let i = 0; i < 10; i++) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useKeypress(i.toString(), ifNoPanel(() => {
+      const next = (numbers || '') + i.toString()
+      setNumbers(next)
+    }))
+  }
 
   useEffect(() => {
     setImages(null)
@@ -272,6 +286,11 @@ function App() {
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
         <Content />
+        { (page === null) && (numbers !== null) &&
+            <Information className="">
+              {numbers}
+            </Information>
+        }
         <div className="z-40 absolute flex flex-col items-center" onClick={ e => e.stopPropagation() }>
           { Panel() }
         </div>
