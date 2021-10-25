@@ -34,30 +34,35 @@ export default function useImageHistory(images: NoirImage[] | null, random: bool
     get length(): number {
       return images ? images.length : 0
     },
-    backward() {
+    backward(n?: number) {
       if (position === null || images === null || position === 0)
         return
-      setPosition(position - 1)
+      const next: number = Math.max(0, position - (n || 1))
+      setPosition(next)
     },
-    first () {
+    first (n?: number) {
       if (position === null || images === null || images.length <= 0)
         return
-      setPosition(0)
+      const next: number = Math.min(images.length - 1, (n || 1) - 1)
+      setPosition(next)
     },
-    forward () {
+    forward (n?: number) {
       if (position === null || images === null)
         return
       if (images.length - 1 <= position)
         return
-      setPosition(position + 1)
+      const next: number = Math.min(images.length - 1, position + (n || 1))
+      setPosition(next)
     },
     hide() {
       setPosition(null)
     },
-    last () {
+    last (n?: number) {
       if (position === null || images === null)
         return
-      setPosition(images.length - 1)
+      const _n = n ? n - 1 : images.length - 1
+      const next: number = Math.min(images.length - 1, _n)
+      setPosition(next)
     },
     random () {
       if (position === null || images === null || images.length <= 0)

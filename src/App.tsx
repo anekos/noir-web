@@ -43,7 +43,7 @@ function App() {
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
   const [searching, setSearching] = useState<boolean>(false)
   const [showCursor, setShowCursor] = useState<boolean>(true)
-  const [numbers, setNumbers] = useState<string | null>(null)
+  const [numbers, setNumbers] = useState<number | null>(null)
   const expressionHistory = useExpressionHistory()
 
   const {
@@ -94,8 +94,8 @@ function App() {
   for (let i = 0; i < 10; i++) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useKeypress(i.toString(), ifNoPanel(() => {
-      const next = (numbers || '') + i.toString()
-      setNumbers(next)
+      const n = numbers === null ? 0 : numbers
+      setNumbers(n * 10 + i)
     }))
   }
 
@@ -171,8 +171,11 @@ function App() {
   }
 
   function moveOnClick(method: string) {
+    console.log('moveOnClick', numbers)
     return function() {
-      imageHistory[method]()
+      console.log('moveOnClick-inside', numbers)
+      imageHistory[method](numbers)
+      setNumbers(null)
     }
   }
 
