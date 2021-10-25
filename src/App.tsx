@@ -171,9 +171,7 @@ function App() {
   }
 
   function moveOnClick(method: string) {
-    console.log('moveOnClick', numbers)
     return function() {
-      console.log('moveOnClick-inside', numbers)
       imageHistory[method](numbers)
       setNumbers(null)
     }
