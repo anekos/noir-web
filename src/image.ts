@@ -6,6 +6,7 @@ export interface NoirImage {
     path: string
   }
   format: string
+  dhash?: string
 }
 
 export function imageUrl(image: NoirImage): string {

@@ -88,7 +88,8 @@ function App() {
     else
       setNumbers(null)
   })
-  useKeypress('s', ifNoPanel(togglePanel))
+  useKeypress(';', ifNoPanel(togglePanel))
+  useKeypress('s', ifNoPanel(onSearchSimilar))
   useKeypress('x', ifNoPanel(moveOnClick('random')))
   for (let i = 0; i < 10; i++) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -176,6 +177,15 @@ function App() {
     }
   }
 
+  function onSearchSimilar() {
+    const image = imageHistory.currentImage
+    if (!image || !image.dhash)
+      return
+    const n = numbers || 10
+    onSearch(`dist(dhash, '${image.dhash}') <= ${n}`)
+    setNumbers(null)
+  }
+
   function historyOnClick(expression: string) {
     return () => {
       setSearchExpression(expression)
@@ -193,9 +203,11 @@ function App() {
     }
   }
 
-  function onSearch(expression: string) {
+  function onSearch(expression: string, doClose?: boolean) {
     setDoRecord(false)
     setSearchExpression(expression)
+    if (doClose)
+      setPage(null)
   }
 
   function onCursorMove() {
@@ -253,7 +265,13 @@ function App() {
       return (
         <>
           { ConfigPanel }
-          { imageHistory?.currentImage && images && <ImageMeta image={imageHistory.currentImage} images={images.length} /> }
+          { imageHistory?.currentImage && images &&
+              <ImageMeta
+                image={imageHistory.currentImage}
+                images={images.length}
+                onSearch={onSearch}
+              />
+          }
         </>
       )
     return (<></>)

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
 import YAML from 'yaml'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEquals } from '@fortawesome/free-solid-svg-icons'
 
 import { NoirImage } from '../image'
 import { getFileTags } from '../api'
@@ -10,8 +12,9 @@ import { useEffectIfMounted } from '../hook/use-effect-if-mounted'
 interface IImageMeta {
   image: NoirImage
   images: number
+  onSearch: (string, boolean) => void
 }
-export default function ImageMeta({image, images}: IImageMeta) {
+export default function ImageMeta({image, images, onSearch}: IImageMeta) {
   const [tags, setTags] = useState<null | string[]>(null)
 
   useEffectIfMounted((ifMounted) => {
@@ -21,12 +24,25 @@ export default function ImageMeta({image, images}: IImageMeta) {
 
   const meta = Object.assign({}, image, tags ? {tags} : {})
 
+  function onClickSimilar() {
+    if (!image.dhash)
+      return
+    onSearch(`dist(dhash, '${image.dhash}') <= 10`, true)
+  }
+
   return (
     <div className="z-30 bg-gray-500 p-2 opacity-90 rounded-md flex flex-col items-center w-full mt-2 hidden xl:flex">
       <div className="flex flex-row items-center mb-1">
         <div>
           <div className="font-bold text-white">
-            { images } images
+            <span className="mx-2">
+              { images } images
+            </span>
+            {  image.dhash &&
+                <button>
+                  <FontAwesomeIcon icon={faEquals} onClick={onClickSimilar} />
+                </button>
+            }
           </div>
         </div>
       </div>
