@@ -71,3 +71,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.noir-no-cursor {
+  cursor: none;
+}

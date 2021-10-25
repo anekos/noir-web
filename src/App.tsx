@@ -3,6 +3,7 @@ import './App.css'
 
 import 'react-autocomplete-input/dist/bundle.css'
 import arrayShuffle from 'array-shuffle'
+import classNames from 'classnames'
 import commonPathPrefix from 'common-path-prefix'
 import escapeStringRegexp from 'escape-string-regexp'
 import useKeypress from 'react-use-keypress'
@@ -27,18 +28,20 @@ import { NoirImage, imageUrl } from './image'
 import { isError } from './error'
 import { search, SearchHistory } from './api'
 import { useConfigPanel, Page } from './ui/use-config-panel'
+import { useDelayedAction } from './hook/use-delayed-action'
 
 
 function App() {
   // Hooks {{{
-  const [errorMessage, setErrorMessage] = useState<string|null>(null)
-  const [loadingTries, setLoadingTryles] = useState<number>(0)
-  const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
-  const [images, setImages] = useState<null|NoirImage[]>(null)
-  const [originalImages, setOriginalImages] = useState<null|NoirImage[]>(null)
-  const [searching, setSearching] = useState<boolean>(false)
-  const [firstSearch, setFirstSearch] = useState<boolean>(true)
   const [doRecord, setDoRecord] = useState<boolean>(true)
+  const [errorMessage, setErrorMessage] = useState<string|null>(null)
+  const [firstSearch, setFirstSearch] = useState<boolean>(true)
+  const [images, setImages] = useState<null|NoirImage[]>(null)
+  const [loadingTries, setLoadingTryles] = useState<number>(0)
+  const [originalImages, setOriginalImages] = useState<null|NoirImage[]>(null)
+  const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
+  const [searching, setSearching] = useState<boolean>(false)
+  const [showCursor, setShowCursor] = useState<boolean>(true)
   const expressionHistory = useExpressionHistory()
 
   const {
@@ -116,13 +119,11 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchExpression])
 
-
   useEffect(() => {
     if (imageHistory?.currentImage) {
       setUrl(imageUrl(imageHistory?.currentImage))
     }
   }, [imageHistory, imageHistory.currentImage, setUrl])
-  // }}}
 
   useEffect(() => {
     if (!originalImages)
@@ -130,6 +131,10 @@ function App() {
     setImages(shuffle ? arrayShuffle(originalImages) : originalImages)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shuffle, setUrl])
+
+  const cursor = useDelayedAction()
+
+  // }}}
 
   // Event Handlers {{{
   function imageOnLoad(_: any) {
@@ -178,12 +183,17 @@ function App() {
     setDoRecord(false)
     setSearchExpression(expression)
   }
+
+  function onCursorMove() {
+    setShowCursor(true)
+    cursor.fire(1000, () => setShowCursor(false))
+  }
   // }}}
 
   // Component {{{
   function Image({image}) {
     return (
-      <div className="w-screen h-screen absolute z-10">
+      <div className={classNames('w-screen h-screen absolute z-10', showCursor ? '' : 'noir-no-cursor')}>
         { Img() }
       </div>)
   }
@@ -239,7 +249,7 @@ function App() {
   // <EdgeButton visible={!page} className="mx-1 w-screen h-12 inset-x-0 bottom-0" />
 
   return (
-    <div className="App" onWheel={onWheel}>
+    <div className="App" onWheel={onWheel} onMouseMove={onCursorMove}>
       <EdgeButton visible={!page} className="my-1 h-screen w-12" onClick={ifNoPanel(moveOnClick('backward'))}>
         <FontAwesomeIcon icon={faStepBackward} size="2x" />
       </EdgeButton>
