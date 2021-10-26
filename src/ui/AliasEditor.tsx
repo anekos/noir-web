@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react'
 
-import CheckBox from './CheckBox'
 import ExpressionEditor from './ExpressionEditor'
 import Loading from './Loading'
 import PanelFrame from './PanelFrame'
 import { Alias, deleteAlias, getAlias, getAliases, updateAlias } from '../api'
+import { CheckBox } from './input'
 import { useEffectIfMounted } from '../hook/use-effect-if-mounted'
 
 

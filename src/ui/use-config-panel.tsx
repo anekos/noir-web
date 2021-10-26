@@ -2,9 +2,8 @@ import React, {useState, useEffect} from 'react'
 
 import { InputNumber } from "@supabase/ui"
 
-import CheckBox from './CheckBox'
 import ExpressionEditor from './ExpressionEditor'
-import { Button } from '../ui/input'
+import { Button, CheckBox } from '../ui/input'
 import { SearchHistory } from '../api'
 import { useLocalStorage } from '../hook/use-local-storage'
 
@@ -85,8 +84,8 @@ export function useConfigPanel(history: SearchHistory[]) {
           >
             Search
           </Button>
-          <Button className="mx-1" onClick={showHistoryOnClick}>History</Button>
-          <Button className="mx-1" onClick={_ => setPage(Page.Alias)}>Alias</Button>
+          <Button onClick={showHistoryOnClick}>History</Button>
+          <Button onClick={_ => setPage(Page.Alias)}>Alias</Button>
         </div>
       </div>
 
@@ -96,7 +95,7 @@ export function useConfigPanel(history: SearchHistory[]) {
           placeholder="Interval"
           defaultValue={updateInterval}
           onBlur={intervalOnChange}
-          className="mr-2"
+          className="mx-2"
           min={1}
         />
         <CheckBox caption="Random" value={random} setter={setRandom} />
