@@ -1,12 +1,10 @@
 import React, {useState, useEffect} from 'react'
 
-import classNames from 'classnames'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { InputNumber } from "@supabase/ui"
-import { faList } from '@fortawesome/free-solid-svg-icons'
 
 import CheckBox from './CheckBox'
 import ExpressionEditor from './ExpressionEditor'
+import { Button } from '../ui/input'
 import { SearchHistory } from '../api'
 import { useLocalStorage } from '../hook/use-local-storage'
 
@@ -67,39 +65,11 @@ export function useConfigPanel(history: SearchHistory[]) {
 
   const expressionChanged = searchExpression !== expressionBuffer
 
-  function Submit() {
-    return (
-      <button
-        id="search-button"
-        className={
-          classNames(
-            'rounded-md p-2 bg-green-500 font-bold mx-2',
-            [expressionChanged ? 'text-white' : 'text-gray-200 line-through']
-          )
-        }
-        onClick={_ => expressionChanged && changeExpression(expressionBuffer)}
-      >
-        Search
-      </button>
-    )
-  }
-
-  function History() {
-    return (
-      <div
-        className="rounded-md p-2 bg-green-500 text-white font-bold cursor-pointer"
-        onClick={showHistoryOnClick}
-      >
-        <FontAwesomeIcon icon={faList} onClick={showHistoryOnClick}/>
-      </div>
-    )
-  }
-
   const ConfigPanel = (
     <div className="z-40 bg-blue-500 p-2 opacity-90 rounded-md flex flex-col items-center">
 
-      <div className="flex flex-col items-center w-full m-1 p-1 visible xl:hidden">
-        <div className="p-3 w-screen">
+      <div className="flex flex-col items-center w-full p-1">
+        <div className="p-1 w-full">
           <ExpressionEditor
             expression={expressionBuffer}
             setExpression={setExpressionBuffer}
@@ -108,19 +78,16 @@ export function useConfigPanel(history: SearchHistory[]) {
           />
         </div>
         <div className="flex flex-row">
-          <Submit />
-          <History />
+          <Button
+            className={expressionChanged ? '' : 'line-through'}
+            disabled={!expressionChanged}
+            onClick={_ => changeExpression(expressionBuffer)}
+          >
+            Search
+          </Button>
+          <Button className="mx-1" onClick={showHistoryOnClick}>History</Button>
+          <Button className="mx-1" onClick={_ => setPage(Page.Alias)}>Alias</Button>
         </div>
-      </div>
-      <div className="flex flex-row items-center w-full m-1 p-1 hidden xl:flex">
-          <ExpressionEditor
-            expression={expressionBuffer}
-            setExpression={setExpressionBuffer}
-            onSubmit={() => changeExpression(expressionBuffer)}
-            className="w-96"
-          />
-        <Submit />
-        <History />
       </div>
 
       <div className="flex flex-row items-center m-1 p-1">
@@ -136,18 +103,7 @@ export function useConfigPanel(history: SearchHistory[]) {
       </div>
       <div className="flex flex-row items-center m-1 p-1">
         <CheckBox caption="Shuffle" value={shuffle} setter={setShuffle} />
-        <button
-          className="rounded-md p-2 mr-2 bg-green-500 text-white font-bold"
-          onClick={fullscreenOnClick}
-        >
-          Fullscreen
-        </button>
-        <button
-          className="rounded-md p-2 bg-green-500 text-white font-bold"
-          onClick={_ => setPage(Page.Alias)}
-        >
-          Alias
-        </button>
+        <Button onClick={fullscreenOnClick}>Fullscreen</Button>
       </div>
       <div className="flex flex-row items-center m-1 p-1">
         <CheckBox caption="Tags" value={showTags} setter={setShowTags} className="hidden lg:block" />

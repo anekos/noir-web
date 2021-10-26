@@ -62,6 +62,6 @@ export default function ExpressionEditor({expression, setExpression, onSubmit, c
       value={expression}
       maxOptions={20}
       onKeyPress={onKeyPress}
-      className={classNames("rounded-md block mx-2 font-bold flex-1 h-8 p-2 h-20", className)} />
+      className={classNames("rounded-md font-bold p-2 w-full", className)} />
   )
 }
