@@ -6,9 +6,8 @@ import classNames from 'classnames'
 const ButtonClass = 'rounded-md p-2 bg-green-500 text-white font-bold mx-1'
 
 
-type IButton = {
-  className?: string
-} & ButtonHTMLAttributes<HTMLButtonElement>
+interface IButton extends ButtonHTMLAttributes<HTMLButtonElement> {
+}
 export function Button({children, className, ...props}: IButton) {
   return (
     <button
