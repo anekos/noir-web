@@ -9,7 +9,6 @@ type Body<T extends AnyFunction> = (ifMounted: IfMounted<T>) => void
 export function useEffectIfMounted<T extends AnyFunction>(f: Body<T>, watches: any[]) {
   useEffect(() => {
     let isMounted = true
-    console.log('useEffectIfMounted')
     const _action = (action: (...args: any) => void) => (...args: any) => {
       if (isMounted)
         action(...args)
