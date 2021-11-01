@@ -146,6 +146,13 @@ function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shuffle, setUrl])
 
+  useEffect(() => {
+    if (page !== null) {
+      cursor.cancel()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page])
+
   const cursor = useDelayedAction()
 
   // }}}
@@ -212,7 +219,8 @@ function App() {
 
   function onCursorMove() {
     setShowCursor(true)
-    cursor.fire(1000, () => setShowCursor(false))
+    if (page === null)
+      cursor.fire(1000, () => setShowCursor(false))
   }
   // }}}
 
