@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
 
+import MobileDetect from 'mobile-detect'
 import classNames from 'classnames'
 
 import TextInput from 'react-autocomplete-input'
 import { SearchHistory } from '../api'
 import { getAliases, getHistory, getTags } from '../api'
 import { useEffectIfMounted } from '../hook/use-effect-if-mounted'
+
+
+const MobileDetected = new MobileDetect(window.navigator.userAgent)
 
 
 function sortIgnoreCase(lst: string[]): string[] {
@@ -54,7 +58,7 @@ export default function ExpressionEditor({expression, setExpression, onSubmit, c
 
   return (
     <TextInput
-      autoFocus={true}
+      autoFocus={!MobileDetected.mobile()}
       options={{'@': aliases, '#': tags, '!': expressions}}
       trigger={['@', '#', '!']}
       changeOnSelect={changeOnSelect}
