@@ -58,7 +58,7 @@ export default function ExpressionEditor({expression, setExpression, onSubmit, c
 
   return (
     <TextInput
-      autoFocus={!MobileDetected.mobile()}
+      autoFocus={!(MobileDetected.mobile() || MobileDetected.phone() || MobileDetected.tablet())}
       options={{'@': aliases, '#': tags, '!': expressions}}
       trigger={['@', '#', '!']}
       changeOnSelect={changeOnSelect}
