@@ -46,7 +46,8 @@ export async function getTags(): Promise<string[]> {
 export async function getFileTags(path: string): Promise<string[]> {
   return fetch(`${ApiEndPoint}/file/tags?path=${encodeURIComponent(path)}`, {
     method: 'GET',
-  }).then(it => it.json());
+  }).then(it => it.json())
+  .then(it => it.sort());
 }
 
 export async function search(expression: string, record: boolean): Promise<NoirSearchResult | AppError> {
