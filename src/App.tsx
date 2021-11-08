@@ -48,6 +48,7 @@ function App() {
   const {
     ConfigPanel,
     autoNext,
+    crop,
     page,
     random,
     searchExpression,
@@ -69,10 +70,10 @@ function App() {
   )
 
   const {Img, setUrl} = useBufferedImage({
-    id: "noir-image",
+    id: 'noir-image',
     onLoad: imageOnLoad,
     onError: imageOnError,
-    className: "z-0"
+    className: classNames('z-0 object-center w-full h-full', crop ? 'object-cover' : 'object-contain'),
   })
 
   const ifNoPanel = (f: (...args: any) => void) => (page ? () => void 0 : f)

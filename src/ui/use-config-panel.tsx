@@ -16,13 +16,14 @@ const DefaultExpression = "path like '%wallpaper%'"
 
 export function useConfigPanel(history: SearchHistory[]) {
   const [autoNext, setAutoNext] = useLocalStorage<boolean>('auto-next', true)
+  const [crop, setCrop] = useLocalStorage<boolean>('crop', false)
   const [page, setPage] = useState<Page | null>(null)
   const [random, setRandom] = useLocalStorage<boolean>('random', false)
   const [searchExpression, setSearchExpression] = useLocalStorage<string>('search-expression', DefaultExpression)
   const [showClock, setShowClock] = useLocalStorage<boolean>('show-clock', true)
   const [showPath, setShowPath] = useLocalStorage<boolean>('show-path', false)
-  const [showTags, setShowTags] = useLocalStorage<boolean>('show-tags', false)
   const [showPosition, setShowPosition] = useLocalStorage<boolean>('show-position', false)
+  const [showTags, setShowTags] = useLocalStorage<boolean>('show-tags', false)
   const [shuffle, setShuffle] = useLocalStorage<boolean>('shuffle', true)
   const [updateInterval, setUpdateInterval] = useLocalStorage<number | null>('update-interval', 60)
 
@@ -103,6 +104,7 @@ export function useConfigPanel(history: SearchHistory[]) {
       <div className="flex flex-row items-center m-1 p-1">
         <CheckBox caption="Shuffle" value={shuffle} setter={setShuffle} />
         <Button onClick={fullscreenOnClick}>Fullscreen</Button>
+        <CheckBox caption="Crop" value={crop} setter={setCrop} />
       </div>
       <div className="flex flex-row items-center m-1 p-1">
         <CheckBox caption="Tags" value={showTags} setter={setShowTags} className="hidden lg:block" />
@@ -116,6 +118,7 @@ export function useConfigPanel(history: SearchHistory[]) {
   return {
     ConfigPanel,
     autoNext,
+    crop,
     page,
     random,
     searchExpression,
