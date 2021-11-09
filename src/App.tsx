@@ -42,6 +42,7 @@ function App() {
   const [pathPrefix, setPathPrefix] = useState<RegExp>(/^$/)
   const [searching, setSearching] = useState<boolean>(false)
   const [showCursor, setShowCursor] = useState<boolean>(true)
+  const [showTemporally, setShowTemporally] = useState<boolean>(false)
   const [numbers, setNumbers] = useState<number | null>(null)
   const expressionHistory = useExpressionHistory()
 
@@ -301,15 +302,30 @@ function App() {
         <FontAwesomeIcon icon={faRandom} size="2x" />
       </EdgeButton>
 
-      <div className="absolute left-0 bottom-0 z-50 hidden lg:block max-w-3/7">
-        { showTags && imageHistory?.currentImage && <ImageTags path={imageHistory.currentImage.file.path} onSearch={onSearch} expression={searchExpression} /> }
-        { showPath && imageHistory?.currentImage && <ImagePath pathPrefix={pathPrefix} image={imageHistory.currentImage} /> }
+      <div
+        onMouseEnter={() => setShowTemporally(true)}
+        onMouseLeave={() => setShowTemporally(false)}
+        className="h-24 z-50 absolute w-screen bottom-0 inset-x-0"
+      >
+        <div className="absolute left-0 bottom-0 z-50 hidden lg:block max-w-3/7">
+          { (showTags || showTemporally) && imageHistory?.currentImage &&
+              <ImageTags
+                path={imageHistory.currentImage.file.path}
+                onSearch={onSearch}
+                expression={searchExpression} /> }
+          { (showPath || showTemporally) && imageHistory?.currentImage &&
+              <ImagePath
+                pathPrefix={pathPrefix}
+                image={imageHistory.currentImage} /> }
+        </div>
+
+        { (showPosition || showTemporally) && (imageHistory.position !== null) &&
+            <Position
+              current={ imageHistory.position + 1 }
+              last={imageHistory.length} /> }
+
+        { (showClock || showTemporally) && <Clock /> }
       </div>
-
-      { showPosition && (imageHistory.position !== null) &&
-          <Position current={ imageHistory.position + 1 } last={imageHistory.length} /> }
-
-      { showClock && <Clock /> }
 
       <div className="w-screen h-screen bg-green-800 flex items-center justify-center" onClick={showPanelOnClick}>
         <Content />
