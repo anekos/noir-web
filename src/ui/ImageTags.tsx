@@ -24,7 +24,7 @@ export default function ImageTags({expression, path, onSearch}: ITags) {
     return async function () {
       let replaced = await replaceTag(expression, tag)
       if (replaced === null) {
-        onSearch('#' + tag)
+        onSearch(`#${tag} and ${expression}`)
       } else {
         onSearch(replaced)
       }
