@@ -302,7 +302,7 @@ function App() {
       </EdgeButton>
 
       <div className="absolute left-0 bottom-0 z-50 hidden lg:block max-w-3/7">
-        { showTags && imageHistory?.currentImage && <ImageTags path={imageHistory.currentImage.file.path} onSearch={onSearch}/> }
+        { showTags && imageHistory?.currentImage && <ImageTags path={imageHistory.currentImage.file.path} onSearch={onSearch} expression={searchExpression} /> }
         { showPath && imageHistory?.currentImage && <ImagePath pathPrefix={pathPrefix} image={imageHistory.currentImage} /> }
       </div>
 

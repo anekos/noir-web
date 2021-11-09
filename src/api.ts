@@ -65,6 +65,16 @@ export async function search(expression: string, record: boolean): Promise<NoirS
   });
 }
 
+export async function replaceTag(expression: string, tag: string): Promise<string | null> {
+  return fetch(`${ApiEndPoint}/expression/replace_tag`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({expression, tag}),
+  }).then(it => it.json())
+}
+
 export async function updateAlias(name: string, alias: Alias): Promise<Alias | null> {
   return fetch(`${ApiEndPoint}/alias/${encodeURIComponent(name)}`, {
     method: 'POST',
