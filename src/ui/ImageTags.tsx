@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, Fragment, useState } from 'react'
 
 import { getFileTags, replaceTag } from '../api'
 import Information from './Information'
@@ -34,13 +34,16 @@ export default function ImageTags({expression, path, onSearch}: ITags) {
   return (
     <Information className="extend-on-hover">
       { tags.map((tag, index) => (
+        <Fragment>
           <span
             key={index}
-            className="mr-1 hover:bg-gray-200 hover:text-indigo-900 cursor-pointer"
             onClick={onClick(tag)}
-          >
-            { tag }
-          </span>
+            className="hover:bg-gray-200 hover:text-indigo-900 cursor-pointer">
+              <span className="font-bold">{ tag[0] }</span>
+              <span>{ tag.slice(1) }</span>
+            </span>
+            &nbsp;
+          </Fragment>
       ))}
     </Information>
   )
