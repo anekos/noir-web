@@ -65,6 +65,31 @@ body {
   white-space: nowrap;
 }
 
+
+/* noir-snipper */
+
+.noir-snipper:not(:hover) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.noir-snipper:hover > .snipped {
+  display: none;
+}
+
+.noir-snipper:not(:hover) > .not-snipped {
+  display: none;
+}
+
+.noir-snipper:hover > .not-snipped {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
+  word-break: break-word;
+}
+
+
 .noir-no-cursor {
   cursor: none;
 }

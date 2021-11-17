@@ -8,8 +8,13 @@ interface IPath {
 }
 export default function ImagePath({pathPrefix, image}: IPath) {
   return (
-    <Information className="w-max">
-      { image.file.path.replace(pathPrefix, '') }
+    <Information className="noir-snipper">
+      <span className="snipped">
+        { image.file.path.replace(pathPrefix, '') }
+      </span>
+      <span className="not-snipped">
+        { image.file.path }
+      </span>
     </Information>
   )
 }
