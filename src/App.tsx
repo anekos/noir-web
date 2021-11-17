@@ -303,7 +303,7 @@ function App() {
       </EdgeButton>
 
       <div
-        onMouseEnter={() => setShowTemporally(true)}
+        onMouseEnter={() => setShowTemporally(page === null)}
         onMouseLeave={() => setShowTemporally(false)}
         className="h-24 z-50 absolute w-screen bottom-0 inset-x-0"
       >
