@@ -34,9 +34,8 @@ export default function ImageTags({expression, path, onSearch}: ITags) {
   return (
     <Information className="extend-on-hover">
       { tags.map((tag, index) => (
-        <Fragment>
+        <Fragment key={index}>
           <span
-            key={index}
             onClick={onClick(tag)}
             className="hover:bg-gray-200 hover:text-indigo-900 cursor-pointer">
               <span className="font-bold">{ tag[0] }</span>
