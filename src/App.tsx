@@ -6,6 +6,7 @@ import arrayShuffle from 'array-shuffle'
 import classNames from 'classnames'
 import commonPathPrefix from 'common-path-prefix'
 import escapeStringRegexp from 'escape-string-regexp'
+import toast, { Toaster } from 'react-hot-toast'
 import useKeypress from 'react-use-keypress'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRandom, faStepBackward, faStepForward } from '@fortawesome/free-solid-svg-icons'
@@ -126,6 +127,7 @@ function App() {
       setImages(result.items)
       setPathPrefix(prefixPattern)
       expressionHistory.refresh()
+      toast.success(`${result.items.length} images`)
     }).catch(it => {
       setDoRecord(true)
       setSearching(false)
@@ -338,6 +340,7 @@ function App() {
           { Panel() }
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
